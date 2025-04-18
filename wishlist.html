@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Wishlist</title>
+    <!-- Favicon Links -->
+    <link rel="icon" type="image/png" href="green/logo--green.png" />
+    <link rel="shortcut icon" type="image/png" href="green/logo--green.png" />
+    <!-- Optional: Apple Touch Icon (for iOS home screen) -->
+    <!-- <link rel="apple-touch-icon" href="green/logo--green.png"> -->
+    <style>
+      /* Wishlist.css content embedded here */
+
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        width: 100%;
+        overflow: hidden; /* Prevent body scrollbars */
+      }
+
+      body {
+        background-color: #121212;
+        font-family: "Inter", Arial, sans-serif;
+        color: #e0e0e0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .app-container {
+        width: 100%;
+        height: 100%;
+        max-width: var(--card-max-width);
+        background-color: #151515;
+        position: relative; /* Use relative for centering in flex body */
+        overflow: hidden;
+        border-radius: 0px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        display: flex;
+        flex-direction: column;
+        margin: auto; /* Center the container */
+      }
+
+      /* Top bar block */
+      .top-bar {
+        background: #01b581;
+        /* MODIFIED: Reduced bottom padding */
+        padding: 40px 16px; /* Simpler padding */
+        position: relative;
+        text-align: center;
+        flex-shrink: 0;
+      }
+
+      .top-bar::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 1px;
+        background: #151515;
+      }
+
+      .back-arrow {
+        position: absolute;
+        left: 16px;
+        top: 16px; /* Adjusted */
+        width: 24px;
+        height: 24px;
+        rotate: 180deg;
+        cursor: pointer;
+      }
+
+      .back-arrow img {
+        width: 100%;
+        height: auto;
+        display: block;
+        filter: brightness(0) invert(0); /* Make arrow black */
+      }
+
+      /* Renamed class */
+      .top-bar-title {
+        font-size: 24px;
+        font-weight: bold;
+        color: black;
+        margin-bottom: 5px;
+      }
+
+      .subtitle {
+        font-size: 14px;
+        margin-top: 4px;
+        color: black;
+        margin: 0;
+      }
+
+      /* Job list area */
+      .job-list {
+        flex-grow: 1;
+        overflow-y: auto; /* Keep scrolling enabled */
+        padding: 10px;
+        background: #151515;
+        background-size: 10px 10px;
+        padding-bottom: 70px; /* Ensure space for footer */
+
+        /* --- Hide scrollbar --- */
+        /* For Webkit browsers (Chrome, Safari, Edge) */
+        ::-webkit-scrollbar {
+          display: none; /* Hide scrollbar */
+          width: 0; /* Remove scrollbar space */
+          background: transparent; /* Optional: just make scrollbar invisible */
+        }
+        /* For Firefox */
+        scrollbar-width: none; /* Hide scrollbar */
+        /* For IE/Edge (older versions) */
+        -ms-overflow-style: none;
+      }
+
+      .job-item {
+        background: #111;
+        border: 1px solid #01b581;
+        border-radius: 5px;
+        display: flex;
+        align-items: center;
+        padding: 34px;
+        margin-bottom: 20px;
+        margin-top: 5px;
+        flex-wrap: wrap;
+      }
+
+      .job-item img {
+        width: 70px;
+        height: 70px;
+        border-radius: 5px;
+        object-fit: cover;
+        margin-right: 10px;
+        flex-shrink: 0;
+      }
+
+      .job-info {
+        flex-grow: 1;
+        min-width: calc(60% - 70px);
+        margin-right: 10px;
+      }
+
+      .job-info .company {
+        font-weight: bold;
+        font-size: 14px;
+        text-align: left;
+        color: #e0e0e0;
+        margin-bottom: 2px;
+      }
+
+      /* Renamed class */
+      .job-info .job-title-text {
+        font-size: 12px;
+        color: #aaa;
+        text-align: left;
+        font-weight: 400;
+      }
+
+      .status.pending {
+        color: rgb(255, 175, 27);
+      }
+
+      .status.ready {
+        color: #01b581;
+      }
+
+      .status.closed {
+        color: rgba(250, 35, 35, 0.952);
+      }
+
+      /* Footer / Bottom Nav */
+      footer.bottom-nav {
+        background-color: #151515;
+        padding: 8px 0;
+        position: fixed; /* Keep fixed */
+        bottom: 0;
+        left: 0; /* Anchor to left */
+        right: 0; /* Anchor to right */
+        width: 100%; /* Take full viewport width */
+        max-width: var(--card-max-width); /* Max width */
+        margin: 0 auto; /* Center the footer */
+        z-index: 50;
+        box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.15);
+        box-sizing: border-box; /* Include padding in width */
+        /* Adjust position if app-container has rounded corners */
+        border-bottom-left-radius: 10px;
+        border-bottom-right-radius: 10px;
+      }
+
+      .nav-icons {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        height: 100%;
+        margin: 0 auto;
+      }
+
+      .nav-item {
+        display: block;
+        flex: 1;
+        text-align: center;
+        padding: 5px;
+        text-decoration: none;
+        color: inherit;
+        cursor: pointer;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .nav-item img {
+        width: 28px;
+        height: 28px;
+        display: block;
+        opacity: 0.6;
+        transition: opacity 0.2s ease;
+      }
+
+      .nav-item:hover img {
+        opacity: 0.8;
+      }
+
+      .nav-item.active img {
+        opacity: 1;
+      }
+
+      /* Media query for potentially removing radius on smaller screens */
+      @media (max-width: var(--card-max-width)) {
+        /* .app-container { border-radius: 0; } */
+        /* footer.bottom-nav { border-bottom-left-radius: 0; border-bottom-right-radius: 0; } */
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app-container">
+      <div class="top-bar">
+        <div class="back-arrow">
+          <!-- Assuming image path is relative to the root or adjust as needed -->
+        </div>
+        <div class="top-bar-title">Wishlist</div>
+        <!-- Subtitle content will be set by JS -->
+        <div class="subtitle" id="job-count-subtitle">0 Jobs</div>
+      </div>
+      <!-- Job list container - jobs will be added here by JS -->
+      <div class="job-list" id="job-list-container">
+        <!-- Job items will be dynamically inserted here -->
+      </div>
+    </div>
+
+    <footer class="bottom-nav">
+      <div class="nav-icons">
+        <a href="home.html" class="nav-item" title="Home">
+          <img src="normal/logo.png" alt="Home" />
+        </a>
+        <a href="search.html" class="nav-item" title="Search Jobs">
+          <img src="normal/search.png" alt="Search Jobs" />
+        </a>
+        <!-- Current page - marked active -->
+        <a href="Monetization.html" class="nav-item active" title="Starred">
+          <img src="green/star-green.png" alt="Starred" />
+        </a>
+        <a href="favorite.html" class="nav-item" title="Liked">
+          <img src="normal/heart.png" alt="Liked" />
+        </a>
+        <a href="signin1.html" class="nav-item" title="Profile">
+          <img src="normal/user.png" alt="Profile" />
+        </a>
+      </div>
+    </footer>
+
+    <script>
+      // Wait for the DOM to be fully loaded before running scripts
+      document.addEventListener("DOMContentLoaded", function () {
+        const jobsData = [
+          {
+            id: 1,
+            logoUrl: "https://logo.clearbit.com/microsoft.com?size=256",
+            company: "Microsoft",
+            title: "Product Manager",
+            status: "Ready",
+          },
+          {
+            id: 2,
+            logoUrl: "https://logo.clearbit.com/tesla.com?size=256",
+            company: "Tesla",
+            title: "Software Engineer",
+            status: "Pending",
+          },
+          {
+            id: 3,
+            logoUrl: "https://logo.clearbit.com/amazon.com?size=256",
+            company: "Amazon",
+            title: "Cloud Solutions Architect",
+            status: "Closed",
+          },
+          {
+            id: 4,
+            logoUrl: "https://logo.clearbit.com/ibm.com?size=256",
+            company: "IBM",
+            title: "Cloud Consultant",
+            status: "Ready",
+          },
+          {
+            id: 5,
+            logoUrl: "https://logo.clearbit.com/apple.com?size=256",
+            company: "Apple",
+            title: "Hardware Engineer",
+            status: "Pending",
+          },
+          {
+            id: 6,
+            logoUrl: "https://logo.clearbit.com/meta.com?size=256",
+            company: "Meta",
+            title: "Software Engineer, AI",
+            status: "Ready",
+          },
+          {
+            id: 7,
+            logoUrl: "https://logo.clearbit.com/netflix.com?size=256",
+            company: "Netflix",
+            title: "Content Strategy Analyst",
+            status: "Pending",
+          },
+          {
+            id: 8,
+            logoUrl: "https://logo.clearbit.com/salesforce.com?size=256",
+            company: "Salesforce",
+            title: "Marketing Manager",
+            status: "Closed",
+          },
+          {
+            id: 9,
+            logoUrl: "https://logo.clearbit.com/nasa.gov?size=256",
+            company: "NASA",
+            title: "Aerospace Engineer",
+            status: "Ready",
+          },
+          {
+            id: 10,
+            logoUrl: "https://logo.clearbit.com/pfizer.com?size=256",
+            company: "Pfizer",
+            title: "Clinical Research Associate",
+            status: "Pending",
+          },
+          {
+            id: 11,
+            logoUrl: "https://logo.clearbit.com/spotify.com?size=256",
+            company: "Spotify",
+            title: "Data Scientist, Playlists",
+            status: "Closed",
+          },
+          {
+            id: 12,
+            logoUrl: "https://logo.clearbit.com/airbnb.com?size=256",
+            company: "Airbnb",
+            title: "Trust & Safety Investigator",
+            status: "Ready",
+          },
+          {
+            id: 13,
+            logoUrl: "https://logo.clearbit.com/linkedin.com?size=256",
+            company: "LinkedIn",
+            title: "Content Manager",
+            status: "Pending",
+          },
+          {
+            id: 14,
+            logoUrl: "https://logo.clearbit.com/pinterest.com?size=256",
+            company: "Pinterest",
+            title: "Frontend Engineer",
+            status: "Ready",
+          },
+          {
+            id: 15,
+            logoUrl: "https://logo.clearbit.com/google.com?size=256",
+            company: "Google",
+            title: "UX Designer",
+            status: "Ready",
+          },
+        ];
+
+        const jobListContainer = document.getElementById("job-list-container");
+        const jobCountSubtitle = document.getElementById("job-count-subtitle");
+        const backArrow = document.querySelector(".back-arrow");
+
+        // Function to get status class
+        function getStatusClass(status) {
+          return status.toLowerCase(); // 'ready', 'pending', 'closed'
+        }
+
+        // Function to create HTML for a single job item
+        function createJobItemHTML(job) {
+          const statusClass = getStatusClass(job.status);
+          // Use textContent for security against XSS unless HTML is explicitly needed and sanitized
+          return `
+            <div class="job-item">
+              <img src="${job.logoUrl}" alt="${job.company} logo" />
+              <div class="job-info">
+                <div class="company">${job.company}</div>
+                <div class="job-title-text">${job.title}</div>
+              </div>
+              <div class="status ${statusClass}">${job.status}</div>
+            </div>
+          `;
+        }
+
+        // Function to render all jobs
+        function renderJobs() {
+          if (!jobListContainer) return; // Exit if container not found
+
+          // Clear existing content (if any)
+          jobListContainer.innerHTML = "";
+
+          // Generate and append HTML for each job
+          jobsData.forEach((job) => {
+            const jobHTML = createJobItemHTML(job);
+            jobListContainer.insertAdjacentHTML("beforeend", jobHTML);
+          });
+
+          // Update job count in subtitle
+          if (jobCountSubtitle) {
+            jobCountSubtitle.textContent = `${jobsData.length} Jobs`;
+          }
+        }
+
+        // --- Event Listeners ---
+
+        // Back Arrow Click
+        if (backArrow) {
+          backArrow.addEventListener("click", () => {
+            console.log("Back arrow clicked");
+            // Implement navigation logic, e.g.:
+            // window.history.back();
+            // window.location.href = 'previous-page.html';
+          });
+        }
+
+        // Navigation Item Clicks (Example - you might want specific logic per item)
+        const navItems = document.querySelectorAll(".nav-item");
+        navItems.forEach((item) => {
+          item.addEventListener("click", (event) => {
+            // Prevent default if handling navigation purely via JS (e.g., in a SPA)
+            // event.preventDefault();
+            const targetHref = item.getAttribute("href");
+            console.log(`Navigating to: ${targetHref}`);
+            // Allow default navigation for this example:
+            // window.location.href = targetHref;
+          });
+        });
+
+        // --- Initial Render ---
+        renderJobs();
+      }); // End DOMContentLoaded
+    </script>
+  </body>
+</html>

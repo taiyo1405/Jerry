@@ -1,0 +1,1248 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <!-- Favicon Links -->
+    <link rel="icon" type="image/png" href="green/logo--green.png" />
+    <link rel="shortcut icon" type="image/png" href="green/logo--green.png" />
+    <!-- Optional: Apple Touch Icon (for iOS home screen) -->
+    <!-- <link rel="apple-touch-icon" href="green/logo--green.png"> -->
+    <title>9toSwipe</title>
+
+    <!-- Google Fonts - Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Font Awesome for icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    <style>
+      :root {
+        --footer-height: 54px; /* Define footer height for reuse */
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: "Inter", sans-serif;
+      }
+
+      html,
+      body {
+        height: 100vh;
+        width: 100%;
+        overflow: hidden; /* Prevent body scroll for swipe */
+        background-color: #151515; /* Dark background */
+      }
+
+      .app-container {
+        flex: 1; /* Fill remaining space between header and footer */
+        width: 100%;
+        height: calc(100vh - var(--footer-height) + 7px);
+        background-color: #000;
+        position: relative; /* Keep relative for absolute children */
+        overflow: hidden; /* Keep clipping content */
+        display: flex; /* Use flex to manage children heights */
+        flex-direction: column;
+      }
+
+      .top-bar {
+        position: absolute; /* Absolute within app-container */
+        top: 15px;
+        right: 15px;
+        z-index: 10;
+      }
+
+      .top-action-icon {
+        padding: 8px; /* Consistent padding */
+        width: 40px; /* Consistent width */
+        height: 40px; /* Consistent height */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        filter: drop-shadow(0 0px 1px rgba(0, 0, 0, 0.1));
+        cursor: pointer; /* Make icons clickable */
+      }
+
+      .chat-icon {
+        /* Inherits size/padding from .top-action-icon */
+      }
+
+      .swiper-container {
+        flex-grow: 1;
+        width: 100%;
+        position: relative;
+        perspective: 1000px;
+        z-index: 5;
+        overflow: hidden;
+        padding: 10px;
+      }
+
+      .job-card {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        /* border-radius: 10px; */ /* Removed for full edge-to-edge */
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.4s ease-out, opacity 0.4s ease-out;
+        cursor: grab;
+        user-select: none;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        z-index: 1;
+        background-color: #f0f0f0;
+      }
+
+      .job-card.dragging {
+        transition: none;
+        cursor: grabbing;
+      }
+      .job-card.exit-up {
+        transform: translateY(-110%) !important;
+        opacity: 0 !important;
+      }
+      .job-card.exit-down {
+        transform: translateY(110%) !important;
+        opacity: 0 !important;
+      }
+      .card-image {
+        height: 100%;
+        width: 100%;
+        position: relative; /* Positioning context for card-star-icon */
+        background-color: #e0e0e0;
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center 45%;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end; /* Push overlay to bottom */
+      }
+
+      .card-star-icon {
+        position: absolute;
+        right: 20px;
+        top: 59%; /* Adjusted this value */
+        transform: translateY(-50%);
+        width: 32px;
+        height: 32px;
+        cursor: pointer;
+        z-index: 3;
+        filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
+        transition: transform 0.2s ease;
+      }
+      .card-star-icon:hover {
+        transform: translateY(-50%) scale(1.1);
+      }
+
+      .image-overlay-content {
+        width: 100%;
+        padding: 15px 20px;
+        background: linear-gradient(
+          to top,
+          rgba(0, 0, 0, 1) 30%,
+          rgba(0, 0, 0, 0.9) 60%,
+          rgba(0, 0, 0, 0.5) 85%,
+          transparent
+        );
+        color: #fff;
+        z-index: 2;
+        max-height: 70%;
+        overflow-y: auto;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+      }
+      .image-overlay-content::-webkit-scrollbar {
+        display: none;
+      }
+      .info-grid {
+        display: grid;
+        grid-template-columns: auto 1fr auto 1fr;
+        gap: 8px 12px;
+        align-items: center;
+        margin-bottom: 15px;
+      }
+      .info-item {
+        display: contents;
+      }
+      .info-item i {
+        font-size: 1.1em;
+        color: #c8c8c8;
+        width: 20px;
+        text-align: center;
+      }
+      .fa-sack-dollar {
+        color: #ffd700;
+      }
+      .fa-map-marker-alt {
+        color: #ff5252;
+      }
+      .fa-hourglass-half {
+        color: #4fc3f7;
+      }
+      .fa-clock {
+        color: #90caf9;
+      }
+      .fa-calendar-alt {
+        color: #ff8a65;
+      }
+
+      .info-text span {
+        display: block;
+      }
+      .info-label {
+        font-weight: bold;
+        font-size: 0.85em;
+        color: #f0f0f0;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
+      }
+      .info-value {
+        font-size: 0.8em;
+        color: #d8d8d8;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .company-info {
+        display: flex;
+        align-items: center;
+        font-weight: bold;
+        font-size: 1.15em;
+        color: #ffffff;
+        margin-bottom: 5px;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+      }
+      .company-info .fa-check-circle {
+        color: #66bb6a;
+        margin-left: 8px;
+        font-size: 0.8em;
+        flex-shrink: 0;
+      }
+      .job-title {
+        font-size: 1em;
+        font-weight: 500;
+        color: #e8e8e8;
+        margin-bottom: 12px;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
+        line-height: 1.25;
+      }
+
+      /* === DESCRIPTION WRAPPER & TOGGLE STYLES (Single Toggle) === */
+      .description-wrapper {
+        position: relative;
+        margin-bottom: 10px;
+      }
+
+      .job-description {
+        font-size: 0.88em;
+        color: #c8c8c8;
+        line-height: 1.4;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+        /* Initial clamping styles */
+        display: -webkit-box;
+        -webkit-line-clamp: 4; /* Show 4 lines initially */
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        word-break: break-word;
+      }
+
+      .description-toggle {
+        /* Common styles for the single toggle */
+        font-size: 0.85em;
+        font-weight: 500;
+        color: #a0a0a0;
+        cursor: pointer;
+        margin-top: 4px;
+        text-decoration: none;
+        display: none; /* Hide by default, shown by JS if needed */
+      }
+      .description-toggle:hover {
+        color: #c8c8c8;
+      }
+
+      /* REMOVED specific .see-more / .see-less display rules */
+
+      /* Styles when expanded */
+      .description-wrapper.expanded .job-description {
+        -webkit-line-clamp: unset; /* Remove line clamping */
+        overflow: visible; /* Show all content */
+        max-height: none; /* Allow full height */
+      }
+      /* ========================================== */
+
+      .job-card:not(.dragging) {
+        transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+      }
+
+      /* ======================================== */
+      /* =========== BOTTOM TASK BAR CSS ========= */
+      /* ======================================== */
+
+      footer.bottom-nav {
+        background-color: #151515;
+        padding: 8px 0;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        z-index: 100; /* Ensure footer is above everything */
+        box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.15);
+        height: var(--footer-height);
+      }
+
+      .nav-icons {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        height: 100%;
+        margin: 0 auto;
+      }
+
+      .nav-item {
+        display: block;
+        flex: 1;
+        text-align: center;
+        padding: 5px;
+        text-decoration: none;
+        color: inherit;
+        cursor: pointer;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .nav-item img {
+        width: 28px;
+        height: 28px;
+        display: block;
+        opacity: 0.6;
+        transition: opacity 0.2s ease;
+      }
+
+      .nav-item:hover img {
+        opacity: 0.8;
+      }
+      .nav-item.active img {
+        opacity: 1;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app-container">
+      <!-- Top Right Bar -->
+      <div class="top-bar">
+        <img
+          src="normal/chat.png"
+          alt="Chat"
+          class="chat-icon top-action-icon"
+        />
+      </div>
+
+      <div class="swiper-container">
+        <!-- Job cards dynamically inserted here -->
+      </div>
+    </div>
+    <!-- End app-container -->
+
+    <footer class="bottom-nav">
+      <div class="nav-icons">
+        <a href="home.html" class="nav-item active" title="Home">
+          <img src="green/logo--green.png" alt="Home" />
+        </a>
+        <a href="search.html" class="nav-item" title="Search Jobs">
+          <img src="normal/search.png" alt="Search Jobs" />
+        </a>
+        <a href="Monetization.html" class="nav-item" title="Starred">
+          <img src="normal/star.png" alt="Starred" />
+        </a>
+        <a href="favorite.html" class="nav-item" title="Liked">
+          <img src="normal/heart.png" alt="Liked" />
+        </a>
+        <a href="signin1.html" class="nav-item" title="Profile">
+          <img src="normal/user.png" alt="Profile" />
+        </a>
+      </div>
+    </footer>
+
+    <script>
+      const swiperContainer = document.querySelector(".swiper-container");
+      let jobCards = [];
+      let currentCard = null;
+      let isDragging = false;
+      let startX, startY, currentX, currentY;
+      let deltaX = 0,
+        deltaY = 0;
+      const SWIPE_THRESHOLD_Y = 80;
+
+      const realJobData = [
+        // ... (keep your existing job data array - added longer descriptions) ...
+        {
+          company: "Google",
+          domain: "google.com",
+          title: "UX Designer",
+          location: "Mountain View, CA",
+          salary: "$120k - $170k",
+          experience: "3+ Years",
+          type: "Full-time",
+          description:
+            "Design intuitive and engaging user experiences for Google products. Collaborate with researchers, product managers, and engineers to define and implement innovative solutions for product direction, visuals and experience. Execute all visual design stages from concept to final hand-off to engineering. Conceptualize original ideas that bring simplicity and user friendliness to complex design roadblocks. Create wireframes, storyboards, user flows, process flows and site maps to effectively communicate interaction and design ideas. Present and defend designs and key milestone deliverables to peers and executive level stakeholders. Conduct user research and evaluate user feedback. Establish and promote design guidelines, best practices and standards.",
+          verified: true,
+        },
+        {
+          company: "Meta",
+          domain: "meta.com",
+          title: "Software Engineer, AI",
+          location: "Remote",
+          salary: "Competitive + RSUs",
+          experience: "4+ Years",
+          type: "Full-time",
+          description:
+            "Develop cutting-edge AI models and infrastructure for Meta's platforms. Work on large-scale distributed systems, pushing the boundaries of machine learning performance and efficiency. Collaborate with research scientists and product teams to translate innovative ideas into production-ready features impacting billions of users. Optimize deep learning models for training and inference on specialized hardware. Design and implement robust data pipelines for model training and evaluation. Contribute to the open-source AI community.",
+          verified: true,
+        },
+        {
+          company: "Apple",
+          domain: "apple.com",
+          title: "Hardware Engineer",
+          location: "Cupertino, CA",
+          salary: "$150k - $200k",
+          experience: "5+ Years",
+          type: "Full-time",
+          description:
+            "Design and develop hardware components for future Apple products. Involves schematic capture, layout supervision, prototyping, rigorous testing, and validation. Work closely with cross-functional teams including Industrial Design, Software Engineering, and Operations to deliver tightly integrated and high-quality products. Requires strong understanding of electrical engineering principles, system architecture, and manufacturing processes. Experience with high-speed digital design, power management, or RF/Wireless technologies is a plus.",
+          verified: true,
+        },
+        {
+          company: "Amazon",
+          domain: "amazon.com",
+          title: "Cloud Solutions Architect",
+          location: "Seattle, WA",
+          salary: "$140k - $190k",
+          experience: "Senior Level",
+          type: "Full-time",
+          description:
+            "Design and implement sophisticated cloud solutions for AWS customers across various industries. Provide expert technical guidance, architectural best practices, and thought leadership. Engage with customers to understand their business drivers and technical requirements, translating them into scalable, secure, and cost-effective AWS architectures. Lead technical workshops, deliver deep-dive sessions, and create reusable assets like reference architectures and whitepapers. Requires deep expertise in core AWS services (Compute, Storage, Networking, Database) and experience with DevOps, security, and migration strategies. This role often involves presenting to both technical and executive audiences, requiring excellent communication skills.",
+          verified: true,
+        },
+        {
+          company: "Microsoft",
+          domain: "microsoft.com",
+          title: "Product Manager, Office",
+          location: "Redmond, WA",
+          salary: "$130k - $180k",
+          experience: "4+ Years",
+          type: "Full-time",
+          description:
+            "Define product strategy and roadmap for Microsoft Office features. Work with engineering and marketing teams.",
+          verified: true,
+        },
+        {
+          company: "Netflix",
+          domain: "netflix.com",
+          title: "Content Strategy Analyst",
+          location: "Los Angeles, CA",
+          salary: "$90k - $130k",
+          experience: "2+ Years",
+          type: "Full-time",
+          description:
+            "Analyze viewing data and market trends to inform content acquisition and programming decisions for Netflix.",
+          verified: true,
+        },
+        {
+          company: "Adobe",
+          domain: "adobe.com",
+          title: "Creative Cloud Specialist",
+          location: "San Jose, CA",
+          salary: "$110k - $160k",
+          experience: "3+ Years",
+          type: "Full-time",
+          description:
+            "Provide technical expertise and support for Adobe Creative Cloud applications. Assist enterprise customers.",
+          verified: true,
+        },
+        {
+          company: "Salesforce",
+          domain: "salesforce.com",
+          title: "Marketing Automation Manager",
+          location: "Remote",
+          salary: "$100k - $150k",
+          experience: "4+ Years",
+          type: "Full-time",
+          description:
+            "Manage marketing campaigns using Salesforce Marketing Cloud. Optimize workflows and analyze performance.",
+          verified: true,
+        },
+        {
+          company: "Intel",
+          domain: "intel.com",
+          title: "Processor Design Engineer",
+          location: "Hillsboro, OR",
+          salary: "$120k - $170k",
+          experience: "3+ Years",
+          type: "Full-time",
+          description:
+            "Design and verify next-generation microprocessor architectures. Requires VLSI design knowledge.",
+          verified: true,
+        },
+        {
+          company: "IBM",
+          domain: "ibm.com",
+          title: "Cloud Consultant",
+          location: "New York, NY",
+          salary: "$110k - $160k",
+          experience: "Senior Level",
+          type: "Full-time",
+          description:
+            "Advise clients on cloud strategy and migration to IBM Cloud. Develop technical solutions.",
+          verified: true,
+        },
+        {
+          company: "Nike",
+          domain: "nike.com",
+          title: "Footwear Designer",
+          location: "Beaverton, OR",
+          salary: "$80k - $120k",
+          experience: "3+ Years Design",
+          type: "Full-time",
+          description:
+            "Design innovative and aesthetically appealing footwear concepts for Nike's athletic and lifestyle lines.",
+          verified: true,
+        },
+        {
+          company: "Pfizer",
+          domain: "pfizer.com",
+          title: "Clinical Research Associate",
+          location: "Remote / Travel",
+          salary: "$85k - $120k",
+          experience: "2+ Years CRA",
+          type: "Full-time",
+          description:
+            "Monitor clinical trial sites to ensure compliance with protocols, GCP, and regulatory requirements.",
+          verified: true,
+        },
+        {
+          company: "Spotify",
+          domain: "spotify.com",
+          title: "Data Scientist, Playlists",
+          location: "Stockholm, SE",
+          salary: "$90k - $140k Eqv.",
+          experience: "3+ Years",
+          type: "Full-time",
+          description:
+            "Analyze user listening patterns to improve playlist generation algorithms and personalization.",
+          verified: true,
+        },
+        {
+          company: "Tesla",
+          domain: "tesla.com",
+          title: "Autopilot Software Engineer",
+          location: "Palo Alto, CA",
+          salary: "$130k - $180k",
+          experience: "4+ Years C++",
+          type: "Full-time",
+          description:
+            "Develop and test software for Tesla's Autopilot and Full Self-Driving features.",
+          verified: true,
+        },
+        {
+          company: "Airbnb",
+          domain: "airbnb.com",
+          title: "Trust & Safety Investigator",
+          location: "Remote",
+          salary: "$70k - $110k",
+          experience: "2+ Years",
+          type: "Full-time",
+          description:
+            "Investigate and resolve user reports related to safety, fraud, and community policy violations.",
+          verified: true,
+        },
+        {
+          company: "Zoom",
+          domain: "zoom.us",
+          title: "Backend Engineer",
+          location: "San Jose, CA / Remote",
+          salary: "$120k - $160k",
+          experience: "3+ Years Java/Go",
+          type: "Full-time",
+          description:
+            "Build and maintain scalable backend services for Zoom's video conferencing platform.",
+          verified: true,
+        },
+        {
+          company: "Uber",
+          domain: "uber.com",
+          title: "Operations Manager, Eats",
+          location: "Chicago, IL",
+          salary: "$95k - $135k",
+          experience: "4+ Years Ops",
+          type: "Full-time",
+          description:
+            "Manage local operations for Uber Eats, focusing on restaurant partnerships and delivery logistics.",
+          verified: true,
+        },
+        {
+          company: "Twitter (X)",
+          domain: "x.com",
+          title: "Mobile Engineer (iOS)",
+          location: "San Francisco, CA / Remote",
+          salary: "$140k - $190k",
+          experience: "5+ Years Swift",
+          type: "Full-time",
+          description:
+            "Develop new features and improve performance for the X mobile application on iOS.",
+          verified: false,
+        },
+        {
+          company: "LinkedIn",
+          domain: "linkedin.com",
+          title: "Content Marketing Manager",
+          location: "Sunnyvale, CA",
+          salary: "$110k - $150k",
+          experience: "5+ Years",
+          type: "Full-time",
+          description:
+            "Develop and execute content marketing strategies to drive engagement and user growth on LinkedIn.",
+          verified: true,
+        },
+        {
+          company: "Pinterest",
+          domain: "pinterest.com",
+          title: "Frontend Engineer",
+          location: "Remote",
+          salary: "$125k - $170k",
+          experience: "3+ Years React",
+          type: "Full-time",
+          description:
+            "Build engaging user interfaces and features for the Pinterest web application using React.",
+          verified: true,
+        },
+        {
+          company: "Slack",
+          domain: "slack.com",
+          title: "Customer Success Manager",
+          location: "Denver, CO",
+          salary: "$80k - $120k",
+          experience: "3+ Years SaaS",
+          type: "Full-time",
+          description:
+            "Help enterprise customers adopt and maximize value from the Slack platform.",
+          verified: true,
+        },
+        {
+          company: "Shopify",
+          domain: "shopify.com",
+          title: "Partner Manager",
+          location: "Remote (Canada)",
+          salary: "$90k - $130k CAD",
+          experience: "4+ Years",
+          type: "Full-time",
+          description:
+            "Build and manage relationships with Shopify agency and app partners.",
+          verified: true,
+        },
+        {
+          company: "JPMorgan Chase",
+          domain: "jpmorganchase.com",
+          title: "Investment Banking Analyst",
+          location: "New York, NY",
+          salary: "$100k + Bonus",
+          experience: "0-2 Years",
+          type: "Full-time",
+          description:
+            "Support senior bankers in executing M&A transactions, capital raises, and other financial advisory services.",
+          verified: true,
+        },
+        {
+          company: "Goldman Sachs",
+          domain: "goldmansachs.com",
+          title: "Quantitative Strategist",
+          location: "London, UK",
+          salary: "Competitive",
+          experience: "Masters/PhD",
+          type: "Full-time",
+          description:
+            "Develop and implement quantitative models for trading, risk management, and investment strategies.",
+          verified: true,
+        },
+        {
+          company: "McKinsey & Co",
+          domain: "mckinsey.com",
+          title: "Management Consultant",
+          location: "Global (Various)",
+          salary: "Very Competitive",
+          experience: "MBA/Adv Degree",
+          type: "Full-time",
+          description:
+            "Advise leading companies on strategic challenges, operational improvements, and organizational change.",
+          verified: true,
+        },
+        {
+          company: "Boston Consulting Group",
+          domain: "bcg.com",
+          title: "Data Scientist Consultant",
+          location: "Boston, MA",
+          salary: "Competitive",
+          experience: "Adv Degree + Exp",
+          type: "Full-time",
+          description:
+            "Apply advanced analytics and data science techniques to solve complex business problems for clients.",
+          verified: true,
+        },
+        {
+          company: "Coca-Cola",
+          domain: "coca-colacompany.com",
+          title: "Brand Manager",
+          location: "Atlanta, GA",
+          salary: "$100k - $140k",
+          experience: "5+ Years CPG",
+          type: "Full-time",
+          description:
+            "Develop and execute marketing plans for a specific brand within the Coca-Cola portfolio.",
+          verified: true,
+        },
+        {
+          company: "PepsiCo",
+          domain: "pepsico.com",
+          title: "Supply Chain Analyst",
+          location: "Plano, TX",
+          salary: "$75k - $100k",
+          experience: "2+ Years",
+          type: "Full-time",
+          description:
+            "Analyze supply chain data to identify optimization opportunities in inventory, logistics, and forecasting.",
+          verified: true,
+        },
+        {
+          company: "Procter & Gamble",
+          domain: "pg.com",
+          title: "Consumer Research Scientist",
+          location: "Cincinnati, OH",
+          salary: "$85k - $120k",
+          experience: "PhD/Masters",
+          type: "Full-time",
+          description:
+            "Design and conduct research studies to understand consumer behavior and preferences for P&G products.",
+          verified: true,
+        },
+        {
+          company: "Johnson & Johnson",
+          domain: "jnj.com",
+          title: "Regulatory Affairs Specialist",
+          location: "New Brunswick, NJ",
+          salary: "$90k - $130k",
+          experience: "3+ Years Pharma/Med",
+          type: "Full-time",
+          description:
+            "Prepare and submit regulatory filings to health authorities (e.g., FDA) for medical devices or pharmaceuticals.",
+          verified: true,
+        },
+        {
+          company: "Walmart",
+          domain: "walmart.com",
+          title: "Store Manager",
+          location: "Various (US)",
+          salary: "$80k - $150k+",
+          experience: "5+ Years Retail Mgmt",
+          type: "Full-time",
+          description:
+            "Oversee all operations of a Walmart store, including staffing, sales, inventory, and customer service.",
+          verified: true,
+        },
+        {
+          company: "Target",
+          domain: "target.com",
+          title: "Visual Merchandiser",
+          location: "Minneapolis, MN",
+          salary: "$60k - $85k",
+          experience: "2+ Years",
+          type: "Full-time",
+          description:
+            "Design and implement appealing product displays and store layouts to enhance the guest experience.",
+          verified: true,
+        },
+        {
+          company: "Costco",
+          domain: "costco.com",
+          title: "Buyer",
+          location: "Issaquah, WA",
+          salary: "$100k - $160k",
+          experience: "5+ Years Buying",
+          type: "Full-time",
+          description:
+            "Source, negotiate, and purchase merchandise for specific categories sold in Costco warehouses.",
+          verified: true,
+        },
+        {
+          company: "Home Depot",
+          domain: "homedepot.com",
+          title: "Assistant Store Manager",
+          location: "Various (US)",
+          salary: "$65k - $90k",
+          experience: "3+ Years Retail Supv",
+          type: "Full-time",
+          description:
+            "Support the Store Manager in overseeing store operations, supervising associates, and driving sales.",
+          verified: true,
+        },
+        {
+          company: "Lowe's",
+          domain: "lowes.com",
+          title: "Pro Sales Specialist",
+          location: "Various (US)",
+          salary: "$50k - $75k + Comm",
+          experience: "2+ Years Sales/Bldg",
+          type: "Full-time",
+          description:
+            "Build relationships and drive sales with professional contractor customers.",
+          verified: true,
+        },
+        {
+          company: "Starbucks",
+          domain: "starbucks.com",
+          title: "District Manager",
+          location: "Various Regions",
+          salary: "$85k - $120k",
+          experience: "5+ Years Multi-Unit Mgmt",
+          type: "Full-time",
+          description:
+            "Oversee operations, staffing, and financial performance for a district of Starbucks stores.",
+          verified: true,
+        },
+        {
+          company: "McDonald's",
+          domain: "mcdonalds.com",
+          title: "Restaurant General Manager",
+          location: "Various",
+          salary: "$55k - $80k",
+          experience: "3+ Years QSR Mgmt",
+          type: "Full-time",
+          description:
+            "Manage all aspects of a McDonald's restaurant, ensuring quality, service, cleanliness, and profitability.",
+          verified: false,
+        },
+        {
+          company: "Disney",
+          domain: "disney.com",
+          title: "Imagineer - Ride Systems",
+          location: "Glendale, CA",
+          salary: "$110k - $160k",
+          experience: "5+ Years Eng.",
+          type: "Full-time",
+          description:
+            "Design, develop, and test the mechanical or electrical systems for theme park attractions.",
+          verified: true,
+        },
+        {
+          company: "Electronic Arts (EA)",
+          domain: "ea.com",
+          title: "Game Designer",
+          location: "Austin, TX / Remote",
+          salary: "$80k - $130k",
+          experience: "3+ Years",
+          type: "Full-time",
+          description:
+            "Design core gameplay mechanics, systems, and content for upcoming video games.",
+          verified: true,
+        },
+        {
+          company: "Activision Blizzard",
+          domain: "activisionblizzard.com",
+          title: "Community Manager",
+          location: "Irvine, CA",
+          salary: "$70k - $100k",
+          experience: "2+ Years Comm Mgmt",
+          type: "Full-time",
+          description:
+            "Engage with the player community for a specific game franchise, manage social media, and gather feedback.",
+          verified: true,
+        },
+        {
+          company: "Epic Games",
+          domain: "epicgames.com",
+          title: "Unreal Engine Evangelist",
+          location: "Remote",
+          salary: "$120k - $180k",
+          experience: "Senior UE Exp.",
+          type: "Full-time",
+          description:
+            "Promote Unreal Engine adoption by creating tutorials, giving presentations, and supporting developers.",
+          verified: true,
+        },
+        {
+          company: "NASA",
+          domain: "nasa.gov",
+          title: "Aerospace Engineer",
+          location: "Houston, TX / Various",
+          salary: "$80k - $150k (GS Scale)",
+          experience: "BS/MS Aero",
+          type: "Full-time",
+          description:
+            "Design, analyze, and test spacecraft, launch vehicles, or related aerospace systems.",
+          verified: true,
+        },
+      ];
+
+      function getRandomDate() {
+        const today = new Date();
+        const futureDays = Math.floor(Math.random() * 61) + 14;
+        const futureDate = new Date(
+          new Date().setDate(today.getDate() + futureDays)
+        );
+        const day = String(futureDate.getDate()).padStart(2, "0");
+        const month = String(futureDate.getMonth() + 1).padStart(2, "0");
+        const year = futureDate.getFullYear();
+        return `${month}/${day}/${year}`;
+      }
+
+      // === UPDATED createJobCardElement function ===
+      function createJobCardElement(jobData, index) {
+        const card = document.createElement("div");
+        card.classList.add("job-card");
+        card.dataset.index = index;
+        const logoSize = 256;
+        const logoUrl = jobData.domain
+          ? `https://logo.clearbit.com/${jobData.domain}?size=${logoSize}`
+          : "";
+        let cardImageStyle = logoUrl
+          ? `background-image: url('${logoUrl}'); background-color: #f0f0f0; background-size: contain; background-repeat: no-repeat; background-position: center 45%;`
+          : `background-color: #e0e0e0;`;
+        card.classList.add("has-logo");
+        const verifiedHtml = jobData.verified
+          ? '<i class="fas fa-check-circle"></i>'
+          : "";
+        const deadline = jobData.deadline || getRandomDate();
+
+        const cardStarIconHtml = `<img src="normal/star.png" alt="Favorite" class="card-star-icon" />`;
+
+        // === STRUCTURE CHANGE: Use only one toggle span ===
+        card.innerHTML = `
+            <div class="card-image" style="${cardImageStyle}">
+                ${cardStarIconHtml}
+                <div class="image-overlay-content">
+                    <div class="info-grid">
+                        <div class="info-item"><i class="fas fa-map-marker-alt"></i><div class="info-text"><span class="info-label">Location</span><span class="info-value">${
+                          jobData.location
+                        }</span></div></div>
+                        <div class="info-item"><i class="fas fa-clock"></i><div class="info-text"><span class="info-label">Job Type</span><span class="info-value">${
+                          jobData.type || "N/A"
+                        }</span></div></div>
+                        <div class="info-item"><i class="fas fa-sack-dollar"></i><div class="info-text"><span class="info-label">Salary</span><span class="info-value">${
+                          jobData.salary
+                        }</span></div></div>
+                        <div class="info-item"><i class="fas fa-hourglass-half"></i><div class="info-text"><span class="info-label">Experience</span><span class="info-value">${
+                          jobData.experience
+                        }</span></div></div>
+                        <div class="info-item"><i class="fas fa-calendar-alt"></i><div class="info-text"><span class="info-label">Deadline</span><span class="info-value">${deadline}</span></div></div>
+                    </div>
+                    <div class="company-info">
+                        <span>${jobData.company}</span>
+                        ${verifiedHtml}
+                    </div>
+                    <p class="job-title">${jobData.title}</p>
+
+                    <div class="description-wrapper">
+                       <p class="job-description">${jobData.description}</p>
+                       <span class="description-toggle"></span> 
+                    </div>
+
+                </div>
+            </div>`;
+        // ==============================================================
+
+        // === Add click listener for the CARD's star icon ===
+        const cardStarIcon = card.querySelector(".card-star-icon");
+        if (cardStarIcon) {
+          cardStarIcon.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const isCurrentlyFavorited = cardStarIcon.src.includes(
+              "green/star-green.png"
+            );
+            if (isCurrentlyFavorited) {
+              cardStarIcon.src = "normal/star.png";
+              console.log(`Card ${index} Unfavorited`);
+            } else {
+              cardStarIcon.src = "green/star-green.png";
+              console.log(`Card ${index} Favorited`);
+            }
+          });
+        } else {
+          console.error("Could not find card star icon for card:", index);
+        }
+
+        // === UPDATED logic for SINGLE "see more" / "see less" toggle ===
+        const descriptionWrapper = card.querySelector(".description-wrapper");
+        const descriptionP = card.querySelector(".job-description");
+        const descriptionToggle = card.querySelector(".description-toggle"); // Select the single toggle
+
+        if (descriptionP && descriptionToggle && descriptionWrapper) {
+          // Use a small timeout to allow rendering for accurate height check
+          setTimeout(() => {
+            const isClamped =
+              descriptionP.scrollHeight > descriptionP.clientHeight + 1;
+            // console.log(`Card ${index} clamped:`, isClamped, `ScrollH: ${descriptionP.scrollHeight}`, `ClientH: ${descriptionP.clientHeight}`);
+
+            if (isClamped) {
+              descriptionToggle.textContent = "... see more"; // Set initial text
+              descriptionToggle.style.display = "inline"; // Show the toggle
+            } else {
+              descriptionToggle.style.display = "none"; // Hide toggle if not needed
+            }
+
+            descriptionToggle.addEventListener("click", (e) => {
+              e.stopPropagation(); // Prevent card swipe
+
+              const isExpanded =
+                descriptionWrapper.classList.contains("expanded");
+
+              if (isExpanded) {
+                // Collapse it
+                descriptionWrapper.classList.remove("expanded");
+                descriptionToggle.textContent = "... see more";
+              } else {
+                // Expand it
+                descriptionWrapper.classList.add("expanded");
+                descriptionToggle.textContent = "see less";
+              }
+            });
+          }, 50); // 50ms timeout
+        } else {
+          console.error("Could not find description elements for card:", index);
+        }
+        // ==============================================================
+
+        return card;
+      }
+      // ========================================
+
+      // ... (loadJobs, initCards, applyStackStyle, updateStackAppearance) ...
+      function loadJobs() {
+        Array.from(swiperContainer.querySelectorAll(".job-card")).forEach(
+          (card) => card.remove()
+        );
+        const jobsToLoad = realJobData;
+        const generatedCards = [];
+        jobsToLoad.forEach((jobData, index) => {
+          if (!jobData.deadline) {
+            jobData.deadline = getRandomDate();
+          }
+          if (jobData.domain) {
+            const cardElement = createJobCardElement(jobData, index);
+            generatedCards.push(cardElement);
+          } else {
+            console.warn(
+              `Skipping company ${jobData.company} due to missing domain.`
+            );
+          }
+        });
+        generatedCards.sort(() => Math.random() - 0.5);
+        generatedCards.forEach((card) => {
+          swiperContainer.prepend(card);
+        });
+        jobCards = Array.from(swiperContainer.querySelectorAll(".job-card"));
+        initCards();
+      }
+      function initCards() {
+        jobCards.forEach((card, index) => {
+          card.style.zIndex = jobCards.length - index;
+          card.style.transition = "none";
+          card.classList.remove(
+            "exit-left",
+            "exit-right",
+            "exit-up",
+            "exit-down",
+            "dragging"
+          );
+          removeListeners(card);
+          applyStackStyle(card, index);
+          // Reset description expansion and toggle text on new card stack init/reshuffle
+          const descWrapper = card.querySelector(".description-wrapper");
+          const descToggle = card.querySelector(".description-toggle");
+          if (descWrapper && descToggle) {
+            descWrapper.classList.remove("expanded");
+            // Initial text/visibility is set in createJobCardElement's timeout
+          }
+          setTimeout(() => {
+            card.style.transition = "";
+          }, 50);
+        });
+        currentCard = jobCards.length > 0 ? jobCards[0] : null;
+        if (currentCard) {
+          addListeners(currentCard);
+        }
+      }
+      function applyStackStyle(card, index) {
+        if (index === 0) {
+          card.style.transform = "translateY(0) scale(1)";
+          card.style.opacity = "1";
+        } else if (index === 1) {
+          card.style.transform = "translateY(10px) scale(0.98)";
+          card.style.opacity = "0.9";
+        } else {
+          const stackDepth = index - 1;
+          card.style.transform = `translateY(${10 + stackDepth * 5}px) scale(${
+            0.98 - stackDepth * 0.03
+          })`;
+          card.style.opacity = `${Math.max(0, 0.9 - stackDepth * 0.1)}`;
+        }
+      }
+      function updateStackAppearance() {
+        jobCards.forEach((card, index) => {
+          card.style.zIndex = jobCards.length - index;
+          card.style.transition = card.classList.contains("dragging")
+            ? "none"
+            : "transform 0.3s ease-out, opacity 0.3s ease-out";
+          applyStackStyle(card, index);
+          // Reset description expansion on card stack update
+          const descWrapper = card.querySelector(".description-wrapper");
+          const descToggle = card.querySelector(".description-toggle");
+          if (descWrapper && descToggle) {
+            descWrapper.classList.remove("expanded");
+            // Re-check clamping state if needed, though usually done at creation
+          }
+          setTimeout(() => {
+            if (!card.classList.contains("dragging")) {
+              card.style.transition = "";
+            }
+          }, 300);
+        });
+      }
+
+      // --- Event Listener Management & Drag Handlers ---
+      function addListeners(element) {
+        if (!element) return;
+        removeListeners(element);
+        element.addEventListener("mousedown", dragStart);
+        element.addEventListener("touchstart", dragStart, { passive: false });
+      }
+      function removeListeners(element) {
+        if (!element) return;
+        element.removeEventListener("mousedown", dragStart);
+        element.removeEventListener("touchstart", dragStart);
+      }
+      function addDocumentListeners() {
+        document.addEventListener("mousemove", dragging);
+        document.addEventListener("touchmove", dragging, { passive: false });
+        document.addEventListener("mouseup", dragEnd);
+        document.addEventListener("touchend", dragEnd);
+        document.addEventListener("mouseleave", dragEnd);
+      }
+      function removeDocumentListeners() {
+        document.removeEventListener("mousemove", dragging);
+        document.removeEventListener("touchmove", dragging);
+        document.removeEventListener("mouseup", dragEnd);
+        document.removeEventListener("touchend", dragEnd);
+        document.removeEventListener("mouseleave", dragEnd);
+      }
+      function dragStart(e) {
+        // Prevent drag if starting on star OR description toggle
+        if (
+          e.target.classList.contains("card-star-icon") ||
+          e.target.classList.contains("description-toggle")
+        ) {
+          isDragging = false;
+          return;
+        }
+        if (!currentCard || isDragging) return;
+        isDragging = true;
+        currentCard.style.transition = "none";
+        currentCard.classList.add("dragging");
+        addDocumentListeners();
+        startX = e.pageX || e.touches[0].pageX;
+        startY = e.pageY || e.touches[0].pageY;
+        deltaX = 0;
+        deltaY = 0;
+        if (e.touches) e.preventDefault();
+      }
+      function dragging(e) {
+        if (!isDragging || !currentCard) return;
+        if (e.touches) e.preventDefault();
+        currentX = e.pageX || e.touches[0].pageX;
+        currentY = e.pageY || e.touches[0].pageY;
+        deltaX = currentX - startX;
+        deltaY = currentY - startY;
+        currentCard.style.transform = `translateY(${deltaY}px)`;
+      }
+      function dragEnd(e) {
+        if (!isDragging || !currentCard) return;
+        isDragging = false;
+        removeDocumentListeners();
+        currentCard.classList.remove("dragging");
+        currentCard.style.transition = "";
+        const absDeltaY = Math.abs(deltaY);
+        let actionTaken = false;
+        if (absDeltaY > SWIPE_THRESHOLD_Y) {
+          if (deltaY < 0) {
+            currentCard.classList.add("exit-up");
+            console.log("Action: Next Job (Swipe Up)");
+            actionTaken = true;
+          } else {
+            currentCard.classList.add("exit-down");
+            console.log("Action: Next Job (Swipe Down)");
+            actionTaken = true;
+          }
+        }
+        if (actionTaken) {
+          const cardToRemove = currentCard;
+          jobCards.shift();
+          updateStackAppearance();
+          currentCard = jobCards.length > 0 ? jobCards[0] : null;
+          setTimeout(() => {
+            if (cardToRemove.parentNode) {
+              cardToRemove.remove();
+            }
+            if (currentCard) {
+              addListeners(currentCard);
+            }
+          }, 400);
+        } else {
+          applyStackStyle(currentCard, 0);
+          // Reset description expansion and text if card snaps back
+          const descWrapper = currentCard.querySelector(".description-wrapper");
+          const descToggle = currentCard.querySelector(".description-toggle");
+          if (
+            descWrapper &&
+            descToggle &&
+            descWrapper.classList.contains("expanded")
+          ) {
+            descWrapper.classList.remove("expanded");
+            // Only reset text if it was previously clamped and toggle was visible
+            if (descToggle.style.display !== "none") {
+              descToggle.textContent = "... see more";
+            }
+          }
+        }
+        deltaX = 0;
+        deltaY = 0;
+      }
+
+      // === DOMContentLoaded listener ===
+      document.addEventListener("DOMContentLoaded", () => {
+        loadJobs();
+        const chatIcon = document.querySelector(".top-bar .chat-icon");
+        if (chatIcon) {
+          chatIcon.addEventListener("click", () => {
+            console.log("Chat icon clicked");
+          });
+        }
+      }); // End of DOMContentLoaded listener
+    </script>
+  </body>
+</html>

@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Profile</title>
+
+    <!-- Font Awesome Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <!-- Favicon Links -->
+    <link rel="icon" type="image/png" href="green/logo--green.png" />
+    <link rel="shortcut icon" type="image/png" href="green/logo--green.png" />
+    <!-- Optional: Apple Touch Icon (for iOS home screen) -->
+    <!-- <link rel="apple-touch-icon" href="green/logo--green.png"> -->
+
+    <!-- Google Fonts - Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --background-color: #121212;
+        --text-color: #ffffff;
+        --secondary-text-color: #b3b3b3;
+        --primary-color: #01b581;
+        --icon-color: #01b581;
+        --divider-color: #404040;
+        --button-bg: #01b581;
+        --button-text: #ffffff;
+        --profile-pic-bg: #008080;
+        --profile-edit-bg: #ffffff;
+        --profile-edit-icon: #000000;
+        --footer-height: 54px;
+        --avatar-size: clamp(65px, 18vw, 90px);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html {
+        font-size: clamp(15px, 1.5vw + 0.5rem, 18px);
+      }
+
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, Helvetica, Arial, sans-serif;
+        background-color: var(--background-color);
+        color: var(--text-color);
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        align-items: center;
+        line-height: 1.5;
+      }
+
+      .profile-wrapper {
+        width: 100%;
+        max-width: 800px;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        padding-bottom: var(--footer-height);
+        margin: 0 auto;
+        position: relative;
+        background-color: var(--background-color);
+      }
+      .profile-container {
+        flex-grow: 1;
+        padding: 40px clamp(15px, 4vw, 30px) clamp(15px, 4vw, 30px);
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+      }
+      .profile-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: clamp(20px, 6vh, 40px);
+        width: 100%;
+      }
+      .profile-header h1 {
+        font-size: 20px;
+        color: var(--primary-color);
+        font-weight: 700;
+        flex-grow: 1;
+        text-align: center;
+        margin-left: clamp(20px, 6vw, 40px);
+        margin-right: clamp(20px, 6vw, 40px);
+        font-family: "Inter", sans-serif;
+      }
+      .header-spacer {
+        width: clamp(25px, 7vw, 35px);
+        height: 1.5em;
+        flex-shrink: 0;
+      }
+      .settings-icon {
+        font-size: clamp(1.3em, 4vw, 1.7em);
+        color: var(--primary-color);
+        width: clamp(25px, 7vw, 35px);
+        text-align: center;
+        flex-shrink: 0;
+        text-decoration: none;
+        cursor: pointer;
+      }
+
+      /* Profile Info Section */
+      .profile-info-group {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: clamp(20px, 6vh, 40px);
+        width: 100%;
+        padding: 0 clamp(5px, 2vw, 15px);
+        flex-wrap: wrap;
+        gap: clamp(10px, 3vw, 20px);
+      }
+      .profile-pic-link {
+        display: block;
+        text-decoration: none;
+        position: relative;
+        width: var(--avatar-size);
+        height: var(--avatar-size);
+        flex-shrink: 0;
+        cursor: pointer;
+      }
+      .profile-pic-container {
+        width: 100%;
+        height: 100%;
+      }
+      .profile-pic {
+        width: 100%;
+        height: 100%;
+        background-color: var(--profile-pic-bg);
+        border-radius: 50%;
+      }
+      .edit-icon-overlay {
+        position: absolute;
+        bottom: 2px;
+        right: 2px;
+        background-color: var(--profile-edit-bg);
+        color: var(--profile-edit-icon);
+        border-radius: 50%;
+        width: clamp(20px, 5vw, 28px);
+        height: clamp(20px, 5vw, 28px);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: clamp(0.7em, 2vw, 0.9em);
+        border: 2px solid var(--background-color);
+        z-index: 2;
+      }
+      .profile-text-details {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        text-align: left;
+        flex-grow: 1;
+        min-width: 150px;
+      }
+      .profile-name {
+        font-size: 20px;
+        font-weight: 700;
+        margin-bottom: clamp(3px, 1vh, 6px);
+        display: flex;
+        align-items: center;
+        font-family: "Inter", sans-serif;
+      }
+      .profile-email {
+        font-size: 14px;
+        color: var(--secondary-text-color);
+        margin-bottom: clamp(10px, 2.5vh, 18px);
+        font-weight: 400;
+        word-break: break-all;
+      }
+      .profile-action-btn {
+        background-color: var(--button-bg);
+        color: var(--button-text);
+        border: none;
+        border-radius: 20px;
+        padding: clamp(6px, 1.8vh, 10px) clamp(20px, 5vw, 30px);
+        font-size: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        text-transform: uppercase;
+        align-self: flex-start;
+        font-family: "Inter", sans-serif;
+        text-decoration: none;
+      }
+
+      /* Profile Options Section */
+      .profile-options {
+        width: 100%;
+      }
+      .profile-options ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      .profile-options li {
+        padding: clamp(12px, 2.5vh, 18px) clamp(10px, 2.5vw, 15px);
+        transition: background-color 0.2s ease;
+        text-align: left;
+        cursor: default;
+      }
+      .profile-options li:not(:has(a.option-link)) {
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+      }
+      .profile-options li a.option-link {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        text-decoration: none;
+        color: inherit;
+        cursor: pointer;
+      }
+      .profile-options li a.option-link .option-icon,
+      .profile-options li .option-icon {
+        color: var(--icon-color);
+        font-size: clamp(1.1em, 3.5vw, 1.4em);
+        width: clamp(28px, 7vw, 40px);
+        text-align: center;
+        margin-right: clamp(10px, 3vw, 18px);
+        flex-shrink: 0;
+      }
+      .profile-options li a.option-link .option-text,
+      .profile-options li .option-text {
+        flex-grow: 1;
+        font-size: 15px;
+        text-align: left;
+        font-weight: 400;
+        font-family: "Inter", sans-serif;
+        color: var(--secondary-text-color);
+      }
+      .profile-options li a.option-link .option-arrow,
+      .profile-options li .option-arrow {
+        display: inline-block;
+        color: var(--secondary-text-color);
+        font-size: clamp(0.8em, 2.5vw, 1em);
+        width: auto;
+        text-align: right;
+        margin-left: 10px;
+        flex-shrink: 0;
+      }
+      .divider {
+        border: none;
+        height: 1px;
+        background-color: var(--divider-color);
+        margin: clamp(8px, 2vh, 15px) 0;
+        width: 100%;
+      }
+      .version-info {
+        text-align: center;
+        color: var(--secondary-text-color);
+        font-size: 9px;
+        margin-top: clamp(15px, 4vh, 30px);
+        margin-bottom: clamp(8px, 2vh, 15px);
+        width: 100%;
+        font-weight: 400;
+      }
+
+      /* Bottom Navigation Bar */
+      footer.bottom-nav {
+        background-color: #151515;
+        padding: 8px 0;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        z-index: 50;
+        box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.15);
+        height: var(--footer-height);
+        box-sizing: border-box;
+      }
+      .nav-icons {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        height: 100%;
+        max-width: 800px;
+        margin: 0 auto;
+      }
+      .nav-item {
+        display: block;
+        flex: 1;
+        text-align: center;
+        padding: 5px;
+        text-decoration: none;
+        color: inherit;
+        cursor: pointer;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .nav-item img {
+        width: 28px;
+        height: 28px;
+        display: block;
+        opacity: 0.6;
+        transition: opacity 0.2s ease;
+      }
+      .nav-item:hover img {
+        opacity: 0.8;
+      }
+      .nav-item.active img {
+        opacity: 1;
+      }
+
+      /* --- MODAL STYLES --- */
+      .modal-overlay {
+        /* --- MODIFIED: display: none initially --- */
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.7);
+        /* --- Use Flex for centering --- */
+        justify-content: center;
+        align-items: center;
+        backdrop-filter: blur(3px);
+      }
+      /* --- ADDED: Class to show modal using flex --- */
+      .modal-overlay.show {
+        display: flex;
+      }
+
+      .modal-content {
+        background-color: #282828;
+        margin: auto;
+        padding: clamp(20px, 5vw, 30px);
+        border: 1px solid var(--divider-color);
+        border-radius: 8px;
+        width: 85%;
+        max-width: 450px;
+        position: relative;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        color: var(--text-color);
+      }
+      .modal-content.small-modal {
+        max-width: 350px;
+      }
+      .modal-close {
+        color: var(--secondary-text-color);
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        font-size: 28px;
+        font-weight: bold;
+        line-height: 1;
+        cursor: pointer;
+        transition: color 0.2s ease;
+      }
+      .modal-close:hover,
+      .modal-close:focus {
+        color: var(--text-color);
+      }
+      .modal-content h3 {
+        margin-top: 0;
+        margin-bottom: 20px;
+        text-align: center;
+        color: var(--primary-color);
+        font-size: 1.5em;
+        font-weight: 700;
+      }
+      .modal-options {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .modal-option-button,
+      .modal-submit-button {
+        background-color: var(--button-bg);
+        color: var(--button-text);
+        border: none;
+        padding: 12px 15px;
+        font-size: 1em;
+        font-weight: 500;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+        width: 100%;
+        text-align: center;
+        font-family: "Inter", sans-serif;
+      }
+      .modal-option-button:hover,
+      .modal-submit-button:hover {
+        filter: brightness(110%);
+      }
+
+      /* Resume Modal Specifics */
+      .modal-body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+      }
+      .modal-body p {
+        font-size: 0.9em;
+        color: var(--secondary-text-color);
+        text-align: center;
+        margin-bottom: 5px;
+      }
+      .file-input {
+        color: var(--secondary-text-color);
+        font-size: 0.9em;
+        width: 100%;
+        padding: 8px;
+        border: 1px dashed var(--divider-color);
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      .file-input::file-selector-button {
+        background-color: var(--primary-color);
+        color: black;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 3px;
+        cursor: pointer;
+        margin-right: 10px;
+      }
+      .file-name-container {
+        /* Container for filename and remove button */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        margin-top: 5px;
+        gap: 8px; /* Space between name and button */
+      }
+      #file-name-display {
+        font-size: 0.8em;
+        color: var(--secondary-text-color);
+        font-style: italic;
+        text-align: center;
+        word-break: break-all;
+        flex-grow: 1; /* Allow filename to take space */
+        min-width: 0; /* Prevent overflow in flex */
+      }
+      #remove-resume-file {
+        /* Style for the remove 'X' button */
+        display: none; /* Hidden by default */
+        background: none;
+        border: none;
+        color: var(--secondary-text-color);
+        font-size: 1.2em; /* Slightly larger X */
+        line-height: 1;
+        cursor: pointer;
+        padding: 0 5px; /* Add some clickable area */
+        transition: color 0.2s ease;
+      }
+      #remove-resume-file:hover {
+        color: var(--text-color);
+      }
+      .modal-submit-button {
+        margin-top: 10px;
+      }
+      /* --- END MODAL STYLES --- */
+    </style>
+  </head>
+  <body>
+    <div class="profile-wrapper">
+      <div class="profile-container">
+        <header class="profile-header">
+          <div class="header-spacer"></div>
+          <h1>My profile</h1>
+          <span class="settings-icon" onclick="console.log('Settings clicked')">
+            <i class="fas fa-cog"></i>
+          </span>
+        </header>
+
+        <section class="profile-info-group">
+          <!-- *** MODIFICATION 1: Updated href *** -->
+          <a
+            href="profile.html"
+            class="profile-pic-link"
+            id="profile-pic-trigger"
+          >
+            <div class="profile-pic-container">
+              <div class="profile-pic"></div>
+              <div class="edit-icon-overlay">
+                <i class="fas fa-pencil-alt"></i>
+              </div>
+            </div>
+          </a>
+          <div class="profile-text-details">
+            <div class="profile-name">
+              Taiyo Miyamoto, 19
+            </div>
+            <div class="profile-email">taiyo1405@gmail.com</div>
+            <button class="profile-action-btn" id="resume-btn-trigger">
+              RESUME
+            </button>
+          </div>
+        </section>
+
+        <section class="profile-options">
+          <ul>
+            <li>
+              <a href="favorite.html" class="option-link"
+                ><i class="fas fa-heart option-icon"></i
+                ><span class="option-text">Favorites</span
+                ><i class="fas fa-chevron-right option-arrow"></i
+              ></a>
+            </li>
+            <li>
+              <a href="Monetization.html" class="option-link"
+                ><i class="fas fa-star option-icon"></i
+                ><span class="option-text">Wishlist</span
+                ><i class="fas fa-chevron-right option-arrow"></i
+              ></a>
+            </li>
+          </ul>
+          <hr class="divider" />
+          <ul>
+            <li id="language-trigger">
+              <i class="fas fa-globe option-icon"></i
+              ><span class="option-text">Languages</span
+              ><i class="fas fa-chevron-right option-arrow"></i>
+            </li>
+            <li onclick="window.location.href='location.html'">
+              <i class="fas fa-map-marker-alt option-icon"></i
+              ><span class="option-text">Location</span
+              ><i class="fas fa-chevron-right option-arrow"></i>
+            </li>
+            <li>
+              <a href="Monetization.html" class="option-link"
+                ><i class="fas fa-sync-alt option-icon"></i
+                ><span class="option-text">Subscription</span
+                ><i class="fas fa-chevron-right option-arrow"></i
+              ></a>
+            </li>
+          </ul>
+          <hr class="divider" />
+          <ul>
+            <li>
+              <a
+                href="#"
+                class="option-link"
+                onclick="console.log('Clear History clicked')"
+                ><i class="fas fa-history option-icon"></i
+                ><span class="option-text">Clear History</span
+                ><i class="fas fa-chevron-right option-arrow"></i
+              ></a>
+            </li>
+            <li>
+              <a
+                href="#"
+                class="option-link"
+                onclick="console.log('Deactivate clicked')"
+                ><i class="fas fa-trash-can option-icon"></i
+                ><span class="option-text">Deactivate Account</span
+                ><i class="fas fa-chevron-right option-arrow"></i
+              ></a>
+            </li>
+            <li>
+              <a href="index.html" class="option-link"
+                ><i class="fas fa-right-from-bracket option-icon"></i
+                ><span class="option-text">Log out</span
+                ><i class="fas fa-chevron-right option-arrow"></i
+              ></a>
+            </li>
+          </ul>
+          <hr class="divider" />
+        </section>
+
+        <div class="version-info">Version 1.0.1</div>
+      </div>
+      <!-- End .profile-container -->
+    </div>
+    <!-- End .profile-wrapper -->
+
+    <!-- MODAL HTML STRUCTURES -->
+    <div id="language-modal-overlay" class="modal-overlay">
+      <!-- Initially hidden by CSS -->
+      <div class="modal-content">
+        <span class="modal-close" id="close-language-modal">×</span>
+        <h3>Select Language</h3>
+        <div class="modal-options">
+          <button class="modal-option-button" data-lang="en-US">
+            English (US)
+          </button>
+          <button class="modal-option-button" data-lang="en-UK">
+            English (UK)
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="resume-modal-overlay" class="modal-overlay">
+      <!-- Initially hidden by CSS -->
+      <div class="modal-content small-modal">
+        <span class="modal-close" id="close-resume-modal">×</span>
+        <h3>Upload Resume</h3>
+        <div class="modal-body">
+          <p>Please select your resume (PDF format):</p>
+          <input
+            type="file"
+            id="resume-file-input"
+            accept=".pdf"
+            class="file-input"
+          />
+          <!-- Container for filename and remove button -->
+          <div class="file-name-container">
+            <div id="file-name-display">No file chosen</div>
+            <button id="remove-resume-file" title="Remove selected file">
+              ×
+            </button>
+            <!-- Added remove button -->
+          </div>
+          <button id="submit-resume-btn" class="modal-submit-button">
+            Upload
+          </button>
+        </div>
+      </div>
+    </div>
+    <!-- END MODAL HTML -->
+
+    <!-- Fixed Footer -->
+    <footer class="bottom-nav">
+      <div class="nav-icons">
+        <a href="home.html" class="nav-item" title="Home"
+          ><img src="normal/logo.png" alt="Home"
+        /></a>
+        <a href="search.html" class="nav-item" title="Search Jobs"
+          ><img src="normal/search.png" alt="Search Jobs"
+        /></a>
+        <a href="Monetization.html" class="nav-item" title="Starred"
+          ><img src="normal/star.png" alt="Starred"
+        /></a>
+        <a href="favorite.html" class="nav-item" title="Liked"
+          ><img src="normal/heart.png" alt="Liked"
+        /></a>
+        <a href="user.html" class="nav-item active" title="Profile"
+          ><img src="green/user-green.png" alt="Profile"
+        /></a>
+      </div>
+    </footer>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        // --- Modal Triggers ---
+        const languageTrigger = document.getElementById("language-trigger");
+        const resumeButtonTrigger =
+          document.getElementById("resume-btn-trigger");
+        // *** MODIFICATION 2: Removed profilePicTrigger reference as it's not needed for JS logic now ***
+        // const profilePicTrigger = document.getElementById("profile-pic-trigger");
+
+        // --- Modal Elements ---
+        const langModal = document.getElementById("language-modal-overlay");
+        const closeLangModalBtn = document.getElementById(
+          "close-language-modal"
+        );
+        const langOptionButtons = document.querySelectorAll(
+          "#language-modal-overlay .modal-option-button"
+        );
+
+        const resumeModal = document.getElementById("resume-modal-overlay");
+        const closeResumeModalBtn =
+          document.getElementById("close-resume-modal");
+        const resumeFileInput = document.getElementById("resume-file-input");
+        const resumeSubmitBtn = document.getElementById("submit-resume-btn");
+        const fileNameDisplay = document.getElementById("file-name-display");
+        const removeResumeFileBtn =
+          document.getElementById("remove-resume-file");
+
+        // --- Functions to Open/Close Modals ---
+        function openModal(modalElement) {
+          if (modalElement) {
+            modalElement.classList.add("show");
+          } else {
+            console.error("Modal element not found!");
+          }
+        }
+        function closeModal(modalElement) {
+          if (modalElement) {
+            modalElement.classList.remove("show");
+          } else {
+            console.error("Modal element not found for closing!");
+          }
+        }
+
+        // --- Event Listeners ---
+
+        // Open Language Modal
+        if (languageTrigger && langModal) {
+          languageTrigger.addEventListener("click", () => openModal(langModal));
+        } else {
+          console.warn("Language trigger or language modal element not found.");
+        }
+
+        // Open Resume Modal
+        if (resumeButtonTrigger && resumeModal) {
+          resumeButtonTrigger.addEventListener("click", () => {
+            // Reset file input state when opening
+            resumeFileInput.value = "";
+            fileNameDisplay.textContent = "No file chosen";
+            fileNameDisplay.style.fontStyle = "italic";
+            if (removeResumeFileBtn) removeResumeFileBtn.style.display = "none"; // Hide remove btn
+            openModal(resumeModal);
+          });
+        } else {
+          console.warn(
+            "Resume button trigger or resume modal element not found."
+          );
+        }
+
+        // Close Language Modal (Button)
+        if (closeLangModalBtn && langModal) {
+          closeLangModalBtn.addEventListener("click", () =>
+            closeModal(langModal)
+          );
+        }
+        // Close Resume Modal (Button)
+        if (closeResumeModalBtn && resumeModal) {
+          closeResumeModalBtn.addEventListener("click", () =>
+            closeModal(resumeModal)
+          );
+        }
+
+        // Close Modals by clicking overlay
+        if (langModal) {
+          langModal.addEventListener("click", (event) => {
+            if (event.target === langModal) closeModal(langModal);
+          });
+        }
+        if (resumeModal) {
+          resumeModal.addEventListener("click", (event) => {
+            if (event.target === resumeModal) closeModal(resumeModal);
+          });
+        }
+
+        // Handle Language Selection
+        if (langOptionButtons.length > 0) {
+          langOptionButtons.forEach((button) => {
+            button.addEventListener("click", () => {
+              const selectedLang = button.dataset.lang;
+              console.log(
+                `Selected language: ${selectedLang} (${button.textContent})`
+              );
+              closeModal(langModal);
+            });
+          });
+        }
+
+        // Handle Resume File Input Change
+        if (resumeFileInput && fileNameDisplay && removeResumeFileBtn) {
+          resumeFileInput.addEventListener("change", () => {
+            if (resumeFileInput.files.length > 0) {
+              fileNameDisplay.textContent = resumeFileInput.files[0].name;
+              fileNameDisplay.style.fontStyle = "normal";
+              removeResumeFileBtn.style.display = "inline-block";
+            } else {
+              fileNameDisplay.textContent = "No file chosen";
+              fileNameDisplay.style.fontStyle = "italic";
+              removeResumeFileBtn.style.display = "none";
+            }
+          });
+        }
+
+        // Handle Remove Resume File Button Click
+        if (removeResumeFileBtn && resumeFileInput && fileNameDisplay) {
+          removeResumeFileBtn.addEventListener("click", () => {
+            resumeFileInput.value = ""; // Clear the file input
+            fileNameDisplay.textContent = "No file chosen"; // Reset text
+            fileNameDisplay.style.fontStyle = "italic";
+            removeResumeFileBtn.style.display = "none"; // Hide self
+            console.log("Selected resume file removed.");
+          });
+        }
+
+        // Handle Resume Submit/Upload Button
+        if (resumeSubmitBtn && resumeFileInput) {
+          resumeSubmitBtn.addEventListener("click", () => {
+            if (resumeFileInput.files.length > 0) {
+              const file = resumeFileInput.files[0];
+              console.log(`Attempting to upload resume: ${file.name}`, file);
+              alert(`Simulating upload for: ${file.name}`);
+              closeModal(resumeModal);
+            } else {
+              alert("Please select a PDF file first.");
+            }
+          });
+        }
+
+        // *** MODIFICATION 2: Removed the event listener block for profilePicTrigger ***
+        /*
+        // Optional: Handle Profile Pic Click
+        if (profilePicTrigger) {
+          profilePicTrigger.addEventListener('click', (e) => {
+            e.preventDefault();
+            console.log("Profile picture clicked - potential action");
+          });
+        }
+        */
+
+        // Settings Icon Click
+        const settingsIcon = document.querySelector(".settings-icon");
+        if (settingsIcon) {
+          settingsIcon.addEventListener("click", () =>
+            console.log("Settings icon clicked")
+          );
+        }
+      }); // End DOMContentLoaded
+    </script>
+  </body>
+</html>

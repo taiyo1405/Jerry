@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Chat</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+    }
+    body {
+      background-color: #151515;
+      color: white;
+      height: 100vh;
+      overflow: hidden;
+    }
+    .chat-container {
+      max-width: 430px;
+      margin: auto;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background-color: #000;
+    }
+    .header {
+      background-color: #00d084;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+    }
+    .header h2 {
+      font-size: 20px;
+      color: black;
+      margin: 0 auto;
+    }
+    /* Added filter bar under the header */
+    .filter-bar {
+      background-color: #00d084;
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+    }
+    .filter-dropdown {
+      position: relative;
+      display: inline-block;
+    }
+    .filter-btn {
+      background: none;
+      border: none;
+      color: black;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .filter-dropdown-content {
+      display: none;
+      position: absolute;
+      background-color: #1e1e1e;
+      min-width: 120px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      z-index: 1;
+    }
+    .filter-dropdown-content a {
+      color: white;
+      padding: 8px 12px;
+      text-decoration: none;
+      display: block;
+      font-size: 14px;
+      border-bottom: 1px solid #2c2c2c;
+    }
+    .filter-dropdown-content a:hover {
+      background-color: #2c2c2c;
+    }
+    .filter-dropdown:hover .filter-dropdown-content {
+      display: block;
+    }
+    .chat-list {
+      flex: 1;
+      overflow-y: auto;
+      background-color: #1e1e1e;
+    }
+    .chat-item {
+      display: flex;
+      align-items: center;
+      padding: 14px 16px;
+      border-bottom: 1px solid #2c2c2c;
+    }
+    .chat-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      margin-right: 14px;
+      flex-shrink: 0;
+    }
+    .chat-details {
+      flex: 1;
+    }
+    .chat-details .name {
+      font-weight: bold;
+      font-size: 15px;
+      margin-bottom: 4px;
+    }
+    .chat-details .message {
+      font-size: 14px;
+      color: #cfcfcf;
+    }
+    .chat-date {
+      font-size: 12px;
+      color: #aaa;
+      margin-left: 8px;
+    }
+    .chat-item.user-a .chat-details .name,
+    .chat-item.user-a .chat-details .message {
+      color: white;
+      font-weight: 900;
+    }
+  </style>
+</head>
+<body>
+  <div class="chat-container">
+    <div class="header">
+      <!-- Replace the text arrow with back.png image -->
+      <span style="font-size: 24px; cursor: pointer">
+        <img src="black/arrow.svg" alt="Back" style="height:24px; width:24px;" />
+      </span>
+      <h2>Chat</h2>
+      <span style="color: transparent">←</span> <!-- spacing trick -->
+    </div>
+    <!-- New filter bar with dropdown under the header -->
+    <div class="filter-bar">
+      <div class="filter-dropdown">
+        <button class="filter-btn">All</button>
+        <div class="filter-dropdown-content">
+          <a href="#">All</a>
+          <a href="#">Recent</a>
+          <a href="#">Oldest</a>
+          <a href="#">Unread</a>
+        </div>
+      </div>
+    </div>
+    <div class="chat-list">
+      <div class="chat-item user-a">
+        <div class="chat-avatar" style="background-color: #9d2323"></div>
+        <div class="chat-details">
+          <div class="name">User A</div>
+          <div class="message"><strong>HI, how are you today?</strong></div>
+        </div>
+        <div class="chat-date">Monday</div>
+      </div>
+      <div class="chat-item">
+        <div class="chat-avatar" style="background-color: #2b2baa"></div>
+        <div class="chat-details">
+          <div class="name">User B</div>
+          <div class="message">We'll see you tomorrow</div>
+        </div>
+        <div class="chat-date">19/03</div>
+      </div>
+      <div class="chat-item">
+        <div class="chat-avatar" style="background-color: #7e3a75"></div>
+        <div class="chat-details">
+          <div class="name">User C</div>
+          <div class="message"><strong>Comeback next time?</strong></div>
+        </div>
+        <div class="chat-date">05/03</div>
+      </div>
+      <div class="chat-item">
+        <div class="chat-avatar" style="background-color: #4caf50"></div>
+        <div class="chat-details">
+          <div class="name">User D</div>
+          <div class="message">Thank you ❤️</div>
+        </div>
+        <div class="chat-date">28/02</div>
+      </div>
+      <div class="chat-item">
+        <div class="chat-avatar" style="background-color: #b59e2e"></div>
+        <div class="chat-details">
+          <div class="name">User E</div>
+          <div class="message">No thanks</div>
+        </div>
+        <div class="chat-date">15/02</div>
+      </div>
+      <div class="chat-item">
+        <div class="chat-avatar" style="background-color: #10696d"></div>
+        <div class="chat-details">
+          <div class="name">User F</div>
+          <div class="message">Payout in next week 😌</div>
+        </div>
+        <div class="chat-date">10/01</div>
+      </div>
+      <div class="chat-item">
+        <div class="chat-avatar" style="background-color: #6e1a7e"></div>
+        <div class="chat-details">
+          <div class="name">User G</div>
+          <div class="message">I am coming right now 🔥.</div>
+        </div>
+        <div class="chat-date">30/12/24</div>
+      </div>
+      <div class="chat-item">
+        <div class="chat-avatar" style="background-color: #1e696d"></div>
+        <div class="chat-details">
+          <div class="name">User H</div>
+          <div class="message">Give me a 5* rating, or else!!!</div>
+        </div>
+        <div class="chat-date">27/12/24</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

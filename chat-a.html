@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chat UI with Linh from Adobe</title>
+  <style>
+    .app-wrapper {
+      max-width: 430px;
+      margin: auto;
+      /* slightly shorter vertical height for phone-like view */
+      height: 90vh;
+      display: flex;
+      flex-direction: column;
+      background-color: #000;
+      overflow: hidden;
+    }
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;800&display=swap');
+
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: #151515;
+      display: flex;
+      justify-content: center;
+      align-items: center;  /* center vertically */
+      padding: 16px 0;
+      height: 100vh;
+    }
+
+    .chat-box {
+      width: 100%;
+      max-width: 360px;
+      height: 100%;
+      background: #D9D9D9;
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+
+    .header {
+      background: #00B581;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      border-top-left-radius: 16px;
+      border-top-right-radius: 16px;
+    }
+    .header .back {
+      cursor: pointer;
+      margin-right: 16px;
+      font-size: 20px;
+    }
+    .header .title {
+      flex-grow: 1;
+      text-align: center;
+      font-weight: 800;
+      font-size: 20px;
+      color: #000;
+    }
+
+    .chat-container {
+      flex: 1;
+      background: #151515;
+      /* slight left padding for avatar */
+      padding: 16px 16px 16px 12px;
+      overflow-y: auto;
+    }
+
+    .date-separator {
+      text-align: center;
+      margin: 8px 0;
+    }
+    .date-separator .bubble {
+      display: inline-block;
+      background: #333;
+      color: #fff;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 10px;
+    }
+
+    .message-wrapper {
+      display: flex;
+      align-items: flex-start;  /* avatar top-aligned with bubble */
+      margin: 4px 0;  /* reduce vertical gap */
+    }
+    .message-wrapper.user {
+      justify-content: flex-end;
+    }
+
+    .avatar {
+      width: 24px;
+      height: 24px;
+      background: #831B1B;
+      border-radius: 50%;
+      /* flush left with padding, small gap to bubble */
+      margin: 0 8px 0 0;
+      flex-shrink: 0;
+    }
+
+    .message {
+      position: relative;
+      max-width: 70%;
+      border-radius: 12px;
+      padding: 12px 12px 24px;
+      font-size: 12px;
+      line-height: 1.4;
+      background: #fff;
+      color: #000;
+    }
+    .message.user {
+      background: #01B581;
+      color: #000;
+    }
+
+    .message .time {
+      position: absolute;
+      bottom: 6px;
+      right: 8px;
+      font-size: 10px;
+      color: rgba(21,21,21,0.8);
+    }
+
+    .input-container {
+      display: flex;
+      align-items: center;
+      padding: 8px 12px;
+      background: #151515;
+      border-bottom-left-radius: 16px;
+      border-bottom-right-radius: 16px;
+    }
+    .input-container .icon.assets {
+      color: #fff;
+      font-size: 20px;
+      margin: 0 12px;
+      flex-shrink: 0;
+    }
+    .input-container textarea {
+      flex: 1;
+      border: none;
+      border-radius: 20px;
+      padding: 8px 12px;
+      font-size: 12px;
+      color: #fff;
+      background: #292929;
+      resize: none;
+      overflow: hidden;
+      height: 36px;
+      font-family: 'Inter', sans-serif;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-wrapper">
+    <div class="chat-box">
+    <div class="header">
+      <div class="back" onclick="history.back()">&larr;</div>
+      <div class="title">User A</div>
+      <div style="width:36px;"></div>
+    </div>
+    <div class="chat-container" id="chat"></div>
+    <div class="input-container">
+      <span class="icon assets">＋</span>
+      <span class="icon assets">🖼️</span>
+      <textarea id="input" placeholder="Aa" oninput="autoGrow(this)" onblur="shrink(this)"></textarea>
+      <span class="icon assets">🎤</span>
+    </div>
+      </div>  <!-- end chat-box -->
+  </div>  <!-- end app-wrapper -->
+  <script>
+    function autoGrow(field) {
+      field.style.height = 'auto';
+      field.style.height = field.scrollHeight + 'px';
+    }
+    function shrink(field) {
+      if (!field.value) field.style.height = '36px';
+    }
+    function addDateSeparator() {
+      const container = document.getElementById('chat');
+      const sep = document.createElement('div'); sep.className = 'date-separator';
+      const bubble = document.createElement('span'); bubble.className = 'bubble';
+      const now = new Date(); bubble.innerText = `${now.getDate()}/${now.getMonth()+1}`;
+      sep.appendChild(bubble); container.appendChild(sep);
+    }
+    function addMessage(who, text) {
+      const container = document.getElementById('chat');
+      const wrapper = document.createElement('div'); wrapper.classList.add('message-wrapper', who);
+      if (who === 'bot') {
+        const avatar = document.createElement('div'); avatar.className = 'avatar'; wrapper.appendChild(avatar);
+      }
+      const msg = document.createElement('div'); msg.classList.add('message', who); msg.textContent = text;
+      const time = document.createElement('div'); time.className = 'time';
+      const now = new Date(); time.innerText = `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
+      msg.appendChild(time); wrapper.appendChild(msg); container.appendChild(wrapper);
+      container.scrollTop = container.scrollHeight;
+    }
+    function generateResponse() {
+      const variants = [
+        `Hi there! Thanks for reaching out. Could you share your experience and the roles you're interested in?`,
+        `Hello! I appreciate you contacting Adobe. What background do you have and which positions appeal to you?`,
+        `Thanks for your message! I'd love to learn more about your skills and the Adobe roles you're exploring.`
+      ];
+      return variants[Math.floor(Math.random() * variants.length)];
+    }
+    function sendMessage() {
+      const input = document.getElementById('input'); const text = input.value.trim(); if (!text) return;
+      addMessage('user', text); input.value = ''; shrink(input);
+      addMessage('bot', 'Typing...');
+      setTimeout(() => {
+        const wrappers = document.querySelectorAll('.message-wrapper.bot');
+        const last = wrappers[wrappers.length - 1].querySelector('.message');
+        last.textContent = generateResponse();
+        const time = document.createElement('div'); time.className = 'time';
+        const now = new Date(); time.innerText = `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
+        last.appendChild(time);
+      }, 1000);
+    }
+    document.getElementById('input').addEventListener('keypress', e => {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+    });
+    window.onload = () => { addDateSeparator(); addMessage('bot', `Adobe Careers – HR Team\nHi, I’m Linh from Adobe Talent Acquisition 👋\nHow can I help you today?`); };
+  </script>
+</body>
+</html>

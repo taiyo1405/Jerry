@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Location</title>
+    <!-- Favicon Links -->
+    <link rel="icon" type="image/png" href="green/logo--green.png" />
+    <link rel="shortcut icon" type="image/png" href="green/logo--green.png" />
+    <!-- Optional: Apple Touch Icon (for iOS home screen) -->
+    <!-- <link rel="apple-touch-icon" href="green/logo--green.png"> -->
+    <!-- Font Awesome (Optional, if you want icons) -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <!-- Google Fonts - Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Added 800 weight to match register.html title -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      /* --- Variables (Merged) --- */
+      :root {
+        /* From register.html */
+        --primary-color-register: #01b581;
+        --text-color-register: #fcfff7;
+        --background-color-register: #151515;
+        --input-bg-register: #282828;
+        --placeholder-color-register: #7a7c76;
+
+        /* From original location.html (can be overridden or kept if different needed) */
+        --background-color-location: #121212;
+        --text-color-location: #ffffff;
+        --secondary-text-color: #b3b3b3;
+        --primary-color-location: #01b581;
+        --icon-color: #01b581;
+        --divider-color: #404040;
+        --input-bg-location: #282828;
+        --list-bg: #1e1e1e;
+        --list-hover-bg: #3a3a3a;
+        --max-width: 600px;
+      }
+
+      /* Basic Reset */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html {
+        font-size: 16px;
+      }
+
+      body {
+        font-family: "Inter", sans-serif;
+        /* --- Use register.html background & text color --- */
+        background-color: var(--background-color-register);
+        color: var(--text-color-register);
+        /* --------------------------------------------- */
+        line-height: 1.5;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      /* --- Header copied from register.html --- */
+      .header {
+        padding: 40px 20px 15px 20px; /* Padding from register */
+        width: 100%;
+        max-width: var(--max-width); /* Use max-width from location */
+        margin: 0 auto;
+        flex-shrink: 0;
+      }
+      .back-button {
+        text-decoration: none;
+        display: inline-block;
+        cursor: pointer;
+      }
+      .back-button img {
+        display: block;
+        height: 20px; /* Size from register */
+        width: auto;
+        transform: rotate(180deg);
+        /* Assuming green/arrow-green.png exists */
+      }
+      /* --------------------------------------- */
+
+      /* Container for main content */
+      .container {
+        flex: 1;
+        /* Use padding like register.html container */
+        padding: 0px 25px 40px 25px;
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        max-width: var(--max-width);
+        margin: 0 auto;
+        overflow: hidden;
+      }
+
+      /* --- Title styled like register.html h1 --- */
+      .container h1 {
+        font-size: 30px;
+        font-weight: 700; /* Bold (Inter 700) */
+        margin-bottom: 40px; /* Space below title (adjust if needed) */
+        margin-top: 0;
+        color: #01b581;
+        text-align: center;
+        font-family: "Inter", sans-serif; /* Ensure font */
+      }
+      /* --------------------------------------- */
+
+      /* Search Input - Styles from register.html input */
+      .search-input {
+        width: 100%;
+        background-color: var(--input-bg-register); /* Use register input bg */
+        border: none; /* No border like register */
+        border-radius: 12px; /* Rounded like register */
+        padding: 17px 14px; /* Padding like register */
+        font-size: 18px; /* Font size like register */
+        color: var(--text-color-register); /* Text color */
+        outline: none;
+        margin-bottom: 25px; /* Space below search */
+        flex-shrink: 0;
+        font-family: "Inter", sans-serif;
+        color-scheme: dark; /* Helps with date/time input styling if needed */
+      }
+      .search-input::placeholder {
+        color: var(
+          --placeholder-color-register
+        ); /* Placeholder from register */
+      }
+      .search-input:focus {
+        /* Keep focus style from original location if preferred, or remove */
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(1, 181, 129, 0.3); /* Green focus like register button */
+      }
+
+      /* Results List Area */
+      .results-list-wrapper {
+        flex-grow: 1;
+        overflow: hidden;
+        position: relative;
+        /* Optional: Add back border/radius if desired */
+        /* border: 1px solid var(--divider-color); */
+        /* border-radius: 8px; */
+      }
+      .results-list {
+        height: 100%;
+        overflow-y: auto;
+        /* background-color: var(--list-bg); */ /* Can remove if items have bg */
+      }
+
+      /* Scrollbar styling */
+      .results-list::-webkit-scrollbar {
+        width: 6px;
+      }
+      .results-list::-webkit-scrollbar-track {
+        background: var(--input-bg-register);
+      } /* Match input */
+      .results-list::-webkit-scrollbar-thumb {
+        background-color: var(--divider-color);
+        border-radius: 3px;
+      }
+      .results-list {
+        scrollbar-width: thin;
+        scrollbar-color: var(--divider-color) var(--input-bg-register);
+      }
+
+      /* Individual Location Item */
+      .location-item {
+        padding: 12px 0px; /* Adjust padding as needed */
+        color: var(--secondary-text-color);
+        cursor: pointer;
+        transition: background-color 0.15s ease, color 0.15s ease;
+        font-size: 1rem;
+        border-bottom: 1px solid var(--divider-color);
+      }
+      .location-item:last-child {
+        border-bottom: none;
+      }
+      .location-item:hover {
+        background-color: var(--list-hover-bg);
+        color: var(--text-color);
+      }
+
+      /* Message when no results */
+      .results-list .no-results {
+        padding: 20px;
+        text-align: center;
+        color: var(--secondary-text-color);
+        font-style: italic;
+        font-size: 0.9rem;
+        cursor: default;
+        border-bottom: none;
+      }
+      .results-list .no-results:hover {
+        background-color: transparent;
+        color: var(--secondary-text-color);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header copied from register.html -->
+    <div class="header">
+      <a href="user.html" class="back-button">
+        <!-- Point back to user.html -->
+        <img src="green/arrow-green.png" alt="Back" />
+      </a>
+    </div>
+
+    <!-- Container for main content -->
+    <div class="container">
+      <!-- Title styled like register.html -->
+      <h1>Location</h1>
+      <!-- Changed title text -->
+
+      <input
+        type="search"
+        id="location-search-input"
+        placeholder="Search city, state, or country..."
+        class="search-input"
+      />
+
+      <div class="results-list-wrapper">
+        <div id="location-results-list" class="results-list">
+          <p class="no-results">Start typing to search for locations...</p>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const searchInput = document.getElementById("location-search-input");
+        const resultsList = document.getElementById("location-results-list");
+
+        const allLocations = [
+          // USA
+          "New York, NY, USA",
+          "Los Angeles, CA, USA",
+          "Chicago, IL, USA",
+          "Houston, TX, USA",
+          "Phoenix, AZ, USA",
+          "Philadelphia, PA, USA",
+          "San Antonio, TX, USA",
+          "San Diego, CA, USA",
+          "Dallas, TX, USA",
+          "San Jose, CA, USA",
+          "Austin, TX, USA",
+          "Jacksonville, FL, USA",
+          "Fort Worth, TX, USA",
+          "Columbus, OH, USA",
+          "Charlotte, NC, USA",
+          "San Francisco, CA, USA",
+          "Indianapolis, IN, USA",
+          "Seattle, WA, USA",
+          "Denver, CO, USA",
+          "Washington, DC, USA",
+          "Boston, MA, USA",
+          "Nashville, TN, USA",
+          "Portland, OR, USA",
+          "Miami, FL, USA",
+          "Atlanta, GA, USA",
+          // UK
+          "London, UK",
+          "Manchester, UK",
+          "Birmingham, UK",
+          "Liverpool, UK",
+          "Glasgow, UK",
+          "Edinburgh, UK",
+          "Bristol, UK",
+          "Leeds, UK",
+          "Sheffield, UK",
+          "Cardiff, UK",
+          "Belfast, UK",
+          // Canada
+          "Toronto, ON, Canada",
+          "Vancouver, BC, Canada",
+          "Montreal, QC, Canada",
+          "Calgary, AB, Canada",
+          "Ottawa, ON, Canada",
+          "Edmonton, AB, Canada",
+          "Winnipeg, MB, Canada",
+          "Quebec City, QC, Canada",
+          // Australia
+          "Sydney, NSW, Australia",
+          "Melbourne, VIC, Australia",
+          "Brisbane, QLD, Australia",
+          "Perth, WA, Australia",
+          "Adelaide, SA, Australia",
+          "Gold Coast, QLD, Australia",
+          "Canberra, ACT, Australia",
+          // Germany
+          "Berlin, Germany",
+          "Hamburg, Germany",
+          "Munich, Germany",
+          "Cologne, Germany",
+          "Frankfurt, Germany",
+          "Stuttgart, Germany",
+          "Düsseldorf, Germany",
+          "Dortmund, Germany",
+          "Essen, Germany",
+          "Leipzig, Germany",
+          // France
+          "Paris, France",
+          "Marseille, France",
+          "Lyon, France",
+          "Toulouse, France",
+          "Nice, France",
+          "Nantes, France",
+          "Strasbourg, France",
+          "Montpellier, France",
+          "Bordeaux, France",
+          // Japan
+          "Tokyo, Japan",
+          "Yokohama, Japan",
+          "Osaka, Japan",
+          "Nagoya, Japan",
+          "Sapporo, Japan",
+          "Fukuoka, Japan",
+          "Kobe, Japan",
+          "Kyoto, Japan",
+          "Kawasaki, Japan",
+          "Saitama, Japan",
+          // India
+          "Mumbai, India",
+          "Delhi, India",
+          "Bangalore, India",
+          "Hyderabad, India",
+          "Ahmedabad, India",
+          "Chennai, India",
+          "Kolkata, India",
+          "Surat, India",
+          "Pune, India",
+          "Jaipur, India",
+          // Vietnam
+          "Ho Chi Minh City, Vietnam",
+          "Hanoi, Vietnam",
+          // Other Countries
+          "Singapore",
+          "Hong Kong",
+          "Seoul, South Korea",
+          "Shanghai, China",
+          "Beijing, China",
+          "Dubai, UAE",
+          "Amsterdam, Netherlands",
+          "Rome, Italy",
+          "Madrid, Spain",
+          "Buenos Aires, Argentina",
+          "Mexico City, Mexico",
+          "São Paulo, Brazil",
+          "Johannesburg, South Africa",
+          "Moscow, Russia",
+        ].sort();
+
+        function displayLocations(locationsToShow) {
+          if (!resultsList) return;
+          resultsList.innerHTML = "";
+          if (locationsToShow.length === 0) {
+            resultsList.innerHTML =
+              '<p class="no-results">No matching locations found.</p>';
+            return;
+          }
+          locationsToShow.forEach((location) => {
+            const item = document.createElement("div");
+            item.classList.add("location-item");
+            item.textContent = location;
+            item.dataset.locationValue = location;
+            resultsList.appendChild(item);
+          });
+        }
+
+        function filterLocations(searchTerm) {
+          const lowerSearchTerm = searchTerm.toLowerCase().trim();
+          if (!lowerSearchTerm) return allLocations.slice(0, 50);
+          return allLocations.filter((location) =>
+            location.toLowerCase().includes(lowerSearchTerm)
+          );
+        }
+
+        if (searchInput) {
+          searchInput.addEventListener("input", () => {
+            const searchTerm = searchInput.value;
+            const filtered = filterLocations(searchTerm);
+            displayLocations(filtered);
+          });
+        } else {
+          console.error("Search input not found");
+        }
+
+        if (resultsList) {
+          resultsList.addEventListener("click", (event) => {
+            if (
+              event.target &&
+              event.target.classList.contains("location-item")
+            ) {
+              const selectedLocation =
+                event.target.dataset.locationValue || event.target.textContent;
+              console.log(`Location selected: ${selectedLocation}`);
+              // localStorage.setItem('userSelectedLocation', selectedLocation); // Optional
+              window.location.href = "user.html"; // Redirect back
+            }
+          });
+        } else {
+          console.error("Results list element not found");
+        }
+
+        displayLocations(allLocations.slice(0, 50)); // Initial load
+      });
+    </script>
+  </body>
+</html>

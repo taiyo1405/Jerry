@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Profile</title>
+    <!-- Favicon Links -->
+    <link rel="icon" type="image/png" href="green/logo--green.png" />
+    <link rel="shortcut icon" type="image/png" href="green/logo--green.png" />
+    <!-- Optional: Apple Touch Icon (for iOS home screen) -->
+    <!-- <link rel="apple-touch-icon" href="green/logo--green.png"> -->
+    <!-- Google Fonts - Inter (Regular 400, Medium 500, Bold 700) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html,
+      body {
+        height: 100%; /* Ensure html and body take full height */
+        overflow: hidden; /* Prevent scrolling on body itself */
+      }
+
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, Helvetica, Arial, sans-serif;
+        background-color: #01b581; /* Green background for form area */
+        color: #d9d9d9;
+        /* min-height: 100vh; Replaced by height: 100% */
+        display: flex;
+        flex-direction: column;
+      }
+
+      .profile-container {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        /* REMOVED overflow-y: auto; We don't want this container to scroll */
+        /* We assume content WILL fit due to flexible spacing */
+        height: 100%; /* Make container explicitly take full body height */
+      }
+
+      header {
+        background-color: #151515;
+        padding: 40px 20px 15px 20px;
+        display: flex;
+        align-items: center;
+        position: relative;
+        min-height: 60px;
+        flex-shrink: 0; /* Prevent header from shrinking */
+      }
+
+      .back-arrow {
+        text-decoration: none;
+        transform: rotate(180deg);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        flex-shrink: 0;
+        width: 24px;
+      }
+      .back-arrow img {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+
+      header h1 {
+        font-size: 20px;
+        font-weight: 700; /* Bold */
+        text-align: center;
+        flex-grow: 1;
+        margin: 0;
+        color: #01b581;
+        font-family: "Inter", sans-serif;
+      }
+
+      .header-spacer-right {
+        width: 24px;
+        flex-shrink: 0;
+      }
+
+      .profile-picture-section {
+        background-color: #151515;
+        padding: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        flex-shrink: 0; /* Prevent this section from shrinking */
+      }
+      .profile-picture-wrapper {
+        position: relative;
+      }
+      .profile-picture {
+        width: 120px;
+        height: 120px;
+        background-color: #d9d9d9;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+        border: 3px solid #01b581;
+      }
+      .edit-icon {
+        position: absolute;
+        bottom: 5px;
+        right: 5px;
+        background-color: #151515;
+        color: #d9d9d9;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 16px;
+        cursor: pointer;
+        border: 2px solid #01b581;
+      }
+      .edit-icon::before {
+        content: "✎";
+        line-height: 1;
+        font-family: sans-serif;
+      }
+
+      .profile-form {
+        background-color: #01b581;
+        /* MODIFIED Vertical Padding: Use clamp with vh */
+        padding: clamp(15px, 3vh, 25px) /* Top padding */ 25px
+          /* Left/Right padding */ clamp(15px, 3vh, 30px); /* Bottom padding */
+        flex-grow: 1;
+        /* Allow internal form scrolling ONLY if absolutely necessary (e.g., keyboard pushes content up) */
+        /* Consider adding overflow-y: auto here if needed, but try without first */
+        overflow-y: auto;
+      }
+
+      .form-group {
+        /* MODIFIED Margin Bottom: Use clamp with vh */
+        margin-bottom: clamp(10px, 2vh, 20px);
+        position: relative;
+      }
+      .form-group label {
+        display: block;
+        font-size: 15px;
+        color: #151515;
+        /* MODIFIED Margin Bottom: Use clamp with vh */
+        margin-bottom: clamp(4px, 1vh, 8px);
+        font-weight: 500; /* Medium */
+        font-family: "Inter", sans-serif;
+      }
+      .form-group input {
+        width: 100%;
+        padding: 14px 16px;
+        height: 48px; /* Keep fixed height for consistency, or make scalable */
+        /* Example scalable height: height: clamp(40px, 6vh, 48px); */
+        border: 2px solid transparent;
+        border-radius: 8px;
+        background-color: #ffffff;
+        font-size: 15px;
+        color: #151515;
+        transition: border-color 0.2s ease-in-out;
+        line-height: normal;
+        font-family: "Inter", sans-serif;
+        font-weight: 400; /* Regular */
+      }
+      .form-group input::placeholder {
+        color: #666666;
+        font-family: "Inter", sans-serif;
+        font-weight: 400; /* Regular */
+      }
+      .form-group input:focus {
+        outline: none;
+        border-color: #151515;
+      }
+      .form-group input[type="password"],
+      .form-group input[type="text"][id="password"] {
+        padding-right: 45px; /* Space for the icon */
+      }
+
+      .password-toggle-icon {
+        position: absolute;
+        right: 15px;
+        bottom: 12px; /* (Input height 48px - Icon height 24px) / 2 */
+        height: 24px;
+        width: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        color: #151515;
+        font-size: 20px;
+        z-index: 2;
+      }
+      .password-toggle-icon::before {
+        content: "👁️";
+        line-height: 1;
+        display: block;
+        font-family: sans-serif;
+      }
+      .password-toggle-icon.visible::before {
+        content: "👁️‍🗨️";
+        font-family: sans-serif;
+      }
+
+      /* Style for the anchor tag to look like a button */
+      .save-button {
+        display: block; /* Changed from inline */
+        width: 100%;
+        /* MODIFIED Vertical Padding/Margin: Use clamp with vh */
+        padding: clamp(12px, 2vh, 16px) 16px; /* Top/Bottom padding flexible */
+        margin-top: clamp(15px, 3vh, 30px); /* Margin flexible */
+        background-color: #151515;
+        color: #01b581;
+        border: none;
+        border-radius: 25px;
+        font-size: 15px;
+        font-weight: 700; /* Bold */
+        cursor: pointer;
+        text-align: center;
+        transition: background-color 0.2s ease;
+        font-family: "Inter", sans-serif;
+        text-decoration: none; /* Remove underline from link */
+      }
+      .save-button:hover {
+        background-color: #252525;
+        color: #01b581; /* Ensure text color remains on hover */
+      }
+      .save-button:active {
+        background-color: #050505;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="profile-container">
+      <header>
+        <a href="user.html" class="back-arrow">
+          <!-- Ensure this links back correctly -->
+          <img src="green/arrow-green.png" alt="Back" />
+        </a>
+        <h1>Edit profile</h1>
+        <div class="header-spacer-right"></div>
+      </header>
+
+      <div class="profile-picture-section">
+        <div class="profile-picture-wrapper">
+          <div class="profile-picture">
+            <!-- <img src="path/to/your-image.jpg" alt="Profile Picture" style="width: 100%; height: 100%; object-fit: cover;"> -->
+          </div>
+          <div class="edit-icon"></div>
+        </div>
+      </div>
+
+      <form class="profile-form">
+        <div class="form-group">
+          <label for="first-name">First name</label>
+          <input
+            type="text"
+            id="first-name"
+            name="first_name"
+            value="Miyamoto"
+            placeholder="Enter first name"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="last-name">Last name</label>
+          <input
+            type="text"
+            id="last-name"
+            name="last_name"
+            value="Taiyo"
+            placeholder="Enter last name"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input
+            type="text"
+            id="username"
+            name="username"
+            value="Taiyoyo"
+            placeholder="Choose a username"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            value="Ilovemarketing@gmail.com"
+            placeholder="Enter your email"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="phone">Phone number</label>
+          <input
+            type="tel"
+            id="phone"
+            name="phone"
+            value="0357007738"
+            placeholder="Enter phone number"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            value="************"
+            placeholder="Enter new password or leave blank"
+          />
+          <span class="password-toggle-icon" id="togglePassword"></span>
+        </div>
+
+        <!-- Replaced button with anchor tag -->
+        <a href="user.html" class="save-button">Save changes</a>
+      </form>
+    </div>
+
+    <script>
+      // Password toggle script remains the same
+      const togglePassword = document.getElementById("togglePassword");
+      const passwordInput = document.getElementById("password");
+
+      if (togglePassword && passwordInput) {
+        togglePassword.addEventListener("click", function (event) {
+          const type =
+            passwordInput.getAttribute("type") === "password"
+              ? "text"
+              : "password";
+          passwordInput.setAttribute("type", type);
+          this.classList.toggle("visible", type === "text");
+        });
+      }
+
+      // Form submission prevention (optional but recommended)
+      const form = document.querySelector(".profile-form");
+      if (form) {
+        form.addEventListener("submit", function (event) {
+          // Prevent the default form submission behavior (e.g., page reload on Enter press)
+          event.preventDefault();
+          console.log(
+            "Form submit event detected (prevented default action). Navigation handled by link."
+          );
+          // No alert needed here as the link handles navigation
+        });
+      }
+    </script>
+  </body>
+</html>

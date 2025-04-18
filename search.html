@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Search</title>
+
+    <!-- Favicon Links -->
+    <link rel="icon" type="image/png" href="green/logo--green.png" />
+    <link rel="shortcut icon" type="image/png" href="green/logo--green.png" />
+    <!-- Optional: Apple Touch Icon (for iOS home screen) -->
+    <!-- <link rel="apple-touch-icon" href="green/logo--green.png"> -->
+    <!-- === Google Font: Inter === -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      /* ======================================== */
+      /* ===== EXISTING JOB LIST STYLES ======= */
+      /* ======================================== */
+
+      /* Basic Reset & Body */
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html,
+      body {
+        height: 100%;
+        overflow-x: hidden;
+      }
+      body.overlay-open {
+        overflow: hidden;
+      }
+
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, Helvetica, Arial, sans-serif;
+        background-color: #d9d9d9; /* Main background */
+        color: #151515;
+        display: flex;
+        flex-direction: column;
+        /* Add padding to bottom to prevent content from hiding behind sticky footer */
+        padding-bottom: 70px; /* Adjust based on footer height + desired space */
+      }
+
+      /* Header */
+      header {
+        background-color: #151515; /* Dark header */
+        color: #fff;
+        padding: 40px 16px;
+        text-align: center;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+      }
+
+      header h1 {
+        font-size: 24px;
+        color: #01b581; /* Teal color */
+        font-weight: bold;
+        margin-bottom: 5px;
+      }
+
+      header #job-count-container {
+        color: #01b581;
+        font-size: 14px;
+        margin-top: 4px;
+      }
+
+      header #search-icon-button {
+        position: absolute;
+        top: 18px;
+        right: 15px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 5px;
+        line-height: 0;
+      }
+
+      header #search-icon-button img {
+        width: 24px;
+        height: 24px;
+        vertical-align: middle;
+        display: block;
+      }
+
+      /* Main Content Area */
+      main {
+        flex-grow: 1;
+        padding: 15px;
+        overflow-y: auto;
+        background-color: #d9d9d9;
+      }
+
+      #loading-message,
+      #error-message {
+        text-align: center;
+        padding: 30px;
+        color: #555;
+      }
+      #error-message {
+        color: #e74c3c; /* Red */
+      }
+
+      /* Job Card Styling */
+      .job-card {
+        background-color: #d9d9d9;
+        border: 1px solid #151515;
+        border-left: 4px solid #a0a0a0;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        padding: 15px;
+        padding-left: 12px;
+        display: flex;
+        gap: 15px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+      }
+
+      .job-logo {
+        width: 110px;
+        height: 110px;
+        flex-shrink: 0;
+        border-radius: 4px;
+        object-fit: contain;
+        background-color: #fff;
+        border: 1px solid #eee;
+      }
+
+      .job-details {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        min-width: 0;
+      }
+
+      .job-details .company-name {
+        font-weight: 600;
+        font-size: 1.1em;
+        color: #222;
+        margin-bottom: 3px;
+      }
+
+      .job-details .job-title {
+        font-size: 0.95em;
+        font-weight: 500;
+        color: #444;
+        margin-bottom: 8px;
+      }
+
+      .job-details p {
+        font-size: 0.85em;
+        color: #666;
+        margin-bottom: 3px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .job-details p strong {
+        font-weight: 500;
+        color: #444;
+      }
+
+      /* ======================================== */
+      /* =========== BOTTOM TASK BAR ============ */
+      /* ======================================== */
+
+      footer.bottom-nav {
+        /* Style the footer as the taskbar */
+        background-color: #151515; /* Match header */
+        padding: 8px 0; /* Vertical padding */
+        position: fixed; /* Fixed position at the bottom */
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        z-index: 50; /* Above main content, below overlay */
+        box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.15); /* Subtle shadow on top */
+      }
+
+      .nav-icons {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        height: 100%; /* Fill footer height */
+        /* No max-width needed for full screen */
+        margin: 0 auto;
+      }
+
+      .nav-item {
+        display: block;
+        flex: 1;
+        text-align: center;
+        padding: 5px;
+        text-decoration: none;
+        color: inherit;
+        cursor: pointer;
+        height: 100%; /* Make link area fill height */
+        display: flex; /* Center icon vertically too */
+        justify-content: center;
+        align-items: center;
+      }
+
+      .nav-item img {
+        width: 28px;
+        height: 28px;
+        display: block;
+        /* margin: 0 auto; -- Not needed with flex centering */
+        opacity: 0.6;
+        transition: opacity 0.2s ease;
+      }
+
+      .nav-item:hover img {
+        opacity: 0.8;
+      }
+      .nav-item.active img {
+        opacity: 1;
+      }
+
+      /* ======================================== */
+      /* ====== NEW SEARCH OVERLAY STYLES ======= */
+      /* ======================================== */
+
+      #search-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(21, 21, 21, 0.95);
+        z-index: 100;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        overflow-y: auto;
+        font-family: "Inter", sans-serif;
+      }
+
+      #search-overlay.visible {
+        display: flex;
+      }
+
+      #search-overlay {
+        --main-bg: #151515;
+        --container-bg: #1e1e1e;
+        --contrast-color: #d9d9d9;
+        --accent-color: #01b581;
+        --placeholder-bg: #d9d9d9;
+        --placeholder-text: #151515;
+        --filterbox-transition-speed: 0.2s;
+      }
+
+      #search-overlay::-webkit-scrollbar {
+        width: 8px;
+      }
+      #search-overlay::-webkit-scrollbar-track {
+        background: var(--main-bg);
+      }
+      #search-overlay::-webkit-scrollbar-thumb {
+        background-color: var(--accent-color);
+        border-radius: 4px;
+        border: 2px solid var(--main-bg);
+      }
+      #search-overlay {
+        scrollbar-width: thin;
+        scrollbar-color: var(--accent-color) var(--main-bg);
+      }
+
+      #search-overlay .overlay-outer-wrapper {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        max-width: 600px;
+        box-sizing: border-box;
+        position: relative;
+        z-index: 5;
+      }
+
+      #search-overlay .overlay-container {
+        width: 100%;
+        background-color: var(--container-bg);
+        padding: 0;
+        border-radius: 8px;
+        border: none;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        display: flex;
+        flex-direction: column;
+        color: var(--contrast-color);
+        position: relative;
+      }
+
+      #search-overlay .overlay-close-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        font-size: 2.2em;
+        font-weight: lighter;
+        color: #aaa;
+        background: none;
+        border: none;
+        cursor: pointer;
+        line-height: 1;
+        z-index: 120;
+        padding: 5px;
+      }
+      #search-overlay .overlay-close-btn:hover {
+        color: var(--contrast-color);
+      }
+
+      #search-overlay .overlay-header-content {
+        padding: 30px 30px 0 30px;
+      }
+      #search-overlay h1 {
+        text-align: center;
+        color: var(--accent-color);
+        margin-top: 0;
+        margin-bottom: 10px;
+        font-weight: 600;
+      }
+      #search-overlay p.instructions {
+        text-align: center;
+        color: var(--contrast-color);
+        opacity: 0.8;
+        margin-bottom: 30px;
+        font-size: 0.95rem;
+      }
+
+      #search-overlay #selected-keywords-container {
+        padding: 15px;
+        background-color: var(--contrast-color);
+        border: 2px solid var(--accent-color);
+        border-radius: 6px;
+        min-height: 45px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+        margin-bottom: 25px;
+        transition: opacity var(--filterbox-transition-speed) ease-out,
+          border-color var(--filterbox-transition-speed) ease-out;
+      }
+      #search-overlay #selected-keywords-container.is-empty {
+        opacity: 0.6;
+        border-color: rgba(1, 181, 129, 0.5);
+      }
+      #search-overlay #selected-keywords-container.is-empty .placeholder-text {
+        opacity: 0.8;
+      }
+      #search-overlay .placeholder-text {
+        color: var(--placeholder-text);
+        opacity: 0.7;
+        font-style: italic;
+        font-size: 0.9rem;
+        width: 100%;
+        text-align: center;
+        transition: opacity var(--filterbox-transition-speed) ease-out;
+      }
+
+      #search-overlay .keyword-pill {
+        display: inline-flex;
+        align-items: center;
+        background-color: var(--accent-color);
+        color: var(--main-bg);
+        border-radius: 16px;
+        font-weight: 500;
+        cursor: default;
+        border: 1px solid var(--accent-color);
+        padding: 6px 12px;
+        font-size: 0.9rem;
+      }
+      #search-overlay .remove-keyword {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-left: 8px;
+        background-color: var(--contrast-color);
+        color: var(--main-bg);
+        border: none;
+        border-radius: 50%;
+        width: 18px;
+        height: 18px;
+        font-size: 14px;
+        text-align: center;
+        cursor: pointer;
+        font-weight: bold;
+        transition: background-color 0.2s ease, color 0.2s ease;
+        user-select: none;
+      }
+      #search-overlay .remove-keyword:hover {
+        background-color: var(--main-bg);
+        color: var(--accent-color);
+      }
+
+      #search-overlay .search-area {
+        position: relative;
+        padding: 0 30px 25px 30px;
+        z-index: 10;
+        background-color: transparent;
+      }
+      #search-overlay .search-input-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+        width: 100%;
+      }
+      #search-overlay #search-form {
+        display: flex;
+        flex-grow: 1;
+      }
+      #search-overlay #search-input {
+        flex-grow: 1;
+        padding: 12px 40px 12px 15px;
+        border: 2px solid var(--accent-color);
+        border-radius: 25px;
+        font-size: 1rem;
+        color: var(--main-bg);
+        background-color: var(--contrast-color);
+        font-family: "Inter", sans-serif;
+        transition: border-color 0.2s ease;
+        box-sizing: border-box;
+      }
+      #search-overlay #search-input:focus {
+        outline: none;
+        border-color: var(--accent-color);
+      }
+      #search-overlay #search-input::placeholder {
+        color: var(--main-bg);
+        opacity: 0.6;
+      }
+      #search-overlay .search-icon {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 18px;
+        height: 18px;
+        fill: var(--main-bg);
+        opacity: 0.7;
+        pointer-events: none;
+      }
+
+      #search-overlay #suggestions-list {
+        list-style: none;
+        padding: 0;
+        margin: 6px 0 0 0;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background-color: var(--contrast-color);
+        border: 2px solid var(--accent-color);
+        border-top: none;
+        border-radius: 0 0 8px 8px;
+        max-height: 200px;
+        overflow-y: auto;
+        z-index: 110;
+        box-sizing: border-box;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      }
+      #search-overlay #suggestions-list li {
+        padding: 10px 15px;
+        cursor: pointer;
+        color: var(--main-bg);
+        border-bottom: 1px solid rgba(1, 181, 129, 0.3);
+        opacity: 0.85;
+        font-size: 0.95rem;
+        transition: background-color 0.15s ease, color 0.15s ease;
+      }
+      #search-overlay #suggestions-list li:last-child {
+        border-bottom: none;
+      }
+      #search-overlay #suggestions-list li:hover,
+      #search-overlay #suggestions-list li.selected {
+        background-color: var(--accent-color);
+        color: var(--main-bg);
+        border-bottom-color: var(--accent-color);
+        opacity: 1;
+      }
+      #search-overlay .hidden {
+        display: none !important;
+      }
+
+      #search-overlay #overlay-location-input {
+        width: 100%;
+        padding: 10px 15px;
+        border: 1px solid #555;
+        border-radius: 20px;
+        background-color: #333;
+        color: var(--contrast-color);
+        font-size: 0.9rem;
+        margin-top: 15px;
+        font-family: "Inter", sans-serif;
+      }
+      #search-overlay #overlay-location-input::placeholder {
+        color: #aaa;
+        opacity: 0.8;
+      }
+
+      #search-overlay #final-search-btn {
+        display: block;
+        width: 100%;
+        padding: 12px 20px;
+        margin-top: 25px;
+        background-color: var(--accent-color);
+        color: var(--main-bg);
+        border: none;
+        border-radius: 25px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.2s ease, transform 0.1s ease;
+      }
+      #search-overlay #final-search-btn:hover {
+        background-color: #009a6d;
+      }
+      #search-overlay #final-search-btn:active {
+        transform: scale(0.98);
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>More jobs to your liking</h1>
+      <div id="job-count-container"><span id="job-count">0</span> Jobs</div>
+      <button id="search-icon-button" title="Search Jobs">
+        <img src="green/search-green.png" alt="Search Jobs Icon" />
+      </button>
+    </header>
+
+    <main id="job-listings-container">
+      <div id="loading-message" style="display: none">Loading jobs...</div>
+      <div id="error-message" style="display: none">Could not fetch jobs.</div>
+      <p style="text-align: center; color: #888; margin-top: 20px">
+        Use the search icon
+        <svg
+          style="width: 1em; height: 1em; vertical-align: -0.15em; fill: #888"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        to find jobs.
+      </p>
+    </main>
+
+    <footer class="bottom-nav">
+      <div class="nav-icons">
+        <a href="home.html" class="nav-item" title="Home">
+          <img src="normal/logo.png" alt="Home" />
+          <!-- Placeholder 1 -->
+        </a>
+        <a href="search.html" class="nav-item active" title="Search Jobs">
+          <!-- Add 'active' class -->
+          <img src="green/search-green.png" alt="Search Jobs" />
+          <!-- Active Search Icon -->
+        </a>
+        <a href="Monetization.html" class="nav-item" title="Starred">
+          <img src="normal/star.png" alt="Starred" />
+          <!-- Placeholder 3 -->
+        </a>
+        <a href="favorite.html" class="nav-item" title="Liked">
+          <img src="normal/heart.png" alt="Liked" />
+          <!-- Placeholder 4 -->
+        </a>
+        <a href="signin1.html" class="nav-item" title="Profile">
+          <img src="normal/user.png" alt="Profile" />
+          <!-- Placeholder 5 -->
+        </a>
+      </div>
+    </footer>
+    <!-- === END MODIFICATION === -->
+
+    <!-- Search Overlay HTML (Unchanged) -->
+    <div id="search-overlay">
+      <div class="overlay-outer-wrapper">
+        <div class="overlay-container">
+          <button class="overlay-close-btn" title="Close">×</button>
+          <div class="overlay-header-content">
+            <h1>Job Filters</h1>
+            <p class="instructions">
+              Select one or more keywords to filter jobs.
+            </p>
+            <div id="selected-keywords-container" class="is-empty">
+              <span class="placeholder-text"
+                >Your selected filters will appear here...</span
+              >
+            </div>
+          </div>
+          <div class="search-area">
+            <div class="search-input-wrapper">
+              <form id="search-form" action="#">
+                <input
+                  type="text"
+                  id="search-input"
+                  placeholder="Enter keywords (e.g., React, Python)"
+                  autocomplete="off"
+                />
+              </form>
+              <svg
+                class="search-icon"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </div>
+            <ul id="suggestions-list" class="hidden"></ul>
+            <input
+              type="text"
+              id="overlay-location-input"
+              placeholder="Location (optional)"
+              autocomplete="off"
+            />
+            <button id="final-search-btn">Search Jobs</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // === JS Code is unchanged from previous version ===
+      // ... (Keep all the existing JavaScript code here) ...
+
+      // === Existing Job List DOM Elements ===
+      const jobListingsContainer = document.getElementById(
+        "job-listings-container"
+      );
+      const jobCountSpan = document.getElementById("job-count");
+      const loadingMessage = document.getElementById("loading-message");
+      const errorMessage = document.getElementById("error-message");
+      const initialMessage = jobListingsContainer.querySelector("p");
+      const searchIconButton = document.getElementById("search-icon-button");
+
+      // === New Overlay DOM Elements ===
+      const searchOverlay = document.getElementById("search-overlay");
+      const overlayCloseBtn = searchOverlay.querySelector(".overlay-close-btn");
+      const searchForm = document.getElementById("search-form");
+      const searchInput = document.getElementById("search-input");
+      const suggestionsList = document.getElementById("suggestions-list");
+      const selectedKeywordsContainer = document.getElementById(
+        "selected-keywords-container"
+      );
+      const overlayLocationInput = document.getElementById(
+        "overlay-location-input"
+      );
+      const finalSearchBtn = document.getElementById("final-search-btn");
+      let placeholderText =
+        selectedKeywordsContainer.querySelector(".placeholder-text");
+
+      // === API & Placeholders ===
+      const API_BASE_URL = "https://remotive.com/api/remote-jobs";
+      const PLACEHOLDER_LOGO =
+        "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI3MCIgaGVpZ2h0PSI3MCIgdmlld0JveD0iMCAwIDcwIDcwIj4KICAgIDxyZWN0IHdpZHRoPSI3MCIgaGVpZ2h0PSI3MCIgcng9IjQiIGZpbGw9IiNlYWVhZSIvPgogICAgPHRleHQgeD0iNTAlIiB5PSI1MCUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJJbnRlciwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxMCIgZmlsbD0iI2FhYSI+TG9nbzwvdGV4dD4KPC9zdmc+Cg==";
+
+      // === State & Suggestions Data ===
+      let currentJobs = [];
+      let selectedKeywords = new Set();
+      const jobKeywordsSuggestions = [
+        "Software Engineer",
+        "Developer",
+        "Frontend",
+        "Backend",
+        "Full Stack",
+        "JavaScript",
+        "React",
+        "Vue",
+        "Angular",
+        "Node.js",
+        "Python",
+        "Java",
+        "PHP",
+        "Ruby",
+        "Swift",
+        "Kotlin",
+        "Data Scientist",
+        "Data Analyst",
+        "Machine Learning",
+        "AI",
+        "Database",
+        "SQL",
+        "Project Manager",
+        "Product Manager",
+        "Scrum Master",
+        "Agile Coach",
+        "Designer",
+        "UI/UX Designer",
+        "Graphic Designer",
+        "Web Designer",
+        "Marketing Manager",
+        "Digital Marketing",
+        "Content Writer",
+        "SEO Specialist",
+        "Social Media Manager",
+        "Sales Representative",
+        "Account Manager",
+        "Business Development",
+        "Customer Support",
+        "Customer Success",
+        "Technical Support",
+        "Help Desk",
+        "DevOps",
+        "SysAdmin",
+        "Cloud Engineer",
+        "AWS",
+        "Azure",
+        "GCP",
+        "Security Analyst",
+        "QA Tester",
+        "Automation Engineer",
+        "Writer",
+        "Editor",
+        "Copywriter",
+        "Recruiter",
+        "HR Manager",
+        "Remote",
+        "Junior",
+        "Senior",
+        "Lead",
+        "Manager",
+        "Director",
+        "VP",
+      ].sort();
+
+      // === Functions for Fetching and Displaying Jobs (Unchanged) ===
+      async function fetchJobs(keywords = "", location = "") {
+        jobListingsContainer.innerHTML = "";
+        loadingMessage.style.display = "block";
+        errorMessage.style.display = "none";
+        jobCountSpan.textContent = "...";
+        let searchQuery = keywords.trim();
+        if (location.trim()) {
+          searchQuery += ` ${location.trim()}`;
+        }
+        if (!searchQuery) {
+          loadingMessage.style.display = "none";
+          jobListingsContainer.innerHTML =
+            '<p style="text-align: center; color: #888; margin-top: 20px;">Please select keywords to search.</p>';
+          jobCountSpan.textContent = "0";
+          currentJobs = [];
+          return;
+        }
+        const apiUrl = `${API_BASE_URL}?search=${encodeURIComponent(
+          searchQuery
+        )}&limit=30`;
+        try {
+          const response = await fetch(apiUrl);
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          const data = await response.json();
+          currentJobs = data.jobs || [];
+          displayJobs(currentJobs);
+        } catch (error) {
+          console.error("Error fetching job data:", error);
+          errorMessage.textContent = `Failed to fetch jobs (${error.message}). Please try again.`;
+          errorMessage.style.display = "block";
+          jobListingsContainer.appendChild(errorMessage);
+          currentJobs = [];
+          jobCountSpan.textContent = "0";
+        } finally {
+          loadingMessage.style.display = "none";
+        }
+      }
+      function displayJobs(jobs) {
+        jobListingsContainer.innerHTML = "";
+        jobCountSpan.textContent = jobs.length;
+        if (jobs.length === 0) {
+          jobListingsContainer.innerHTML =
+            '<p style="text-align: center; color: #888; margin-top: 20px;">No jobs found matching your criteria.</p>';
+          return;
+        }
+        jobs.forEach((job) => {
+          const jobCard = document.createElement("div");
+          jobCard.classList.add("job-card");
+          const companyName = job.company_name || "N/A";
+          const jobTitle = job.title || "N/A";
+          const jobLocation =
+            job.candidate_required_location ||
+            (job.job_type && job.job_type.includes("remote")
+              ? "Remote"
+              : "Location N/A");
+          const companyLogo = job.company_logo_url || PLACEHOLDER_LOGO;
+          const salary = job.salary
+            ? job.salary
+            : `~$${Math.floor(Math.random() * (6000 - 1200 + 1)) + 1200}`;
+          const deadlineDate = new Date();
+          deadlineDate.setDate(
+            deadlineDate.getDate() + Math.floor(Math.random() * 90) + 14
+          );
+          const deadline = deadlineDate.toLocaleDateString("en-GB");
+          jobCard.innerHTML = `
+                    <img src="${companyLogo}" alt="${companyName} Logo" class="job-logo" onerror="this.onerror=null; this.src='${PLACEHOLDER_LOGO}';">
+                    <div class="job-details">
+                        <h3 class="company-name">${companyName}</h3>
+                        <p class="job-title">${jobTitle}</p>
+                        <p class="job-salary"><strong>Salary:</strong> ${salary}</p>
+                        <p class="job-deadline"><strong>Deadline:</strong> ${deadline}</p>
+                        <p class="job-location"><strong>Location:</strong> ${jobLocation}</p>
+                        ${
+                          job.url
+                            ? `<a href="${job.url}" target="_blank" style="display:none;">Apply</a>`
+                            : ""
+                        }
+                    </div>
+                `;
+          jobListingsContainer.appendChild(jobCard);
+        });
+      }
+
+      // === NEW OVERLAY FUNCTIONS ===
+      function handleSearchInput() {
+        const term = searchInput.value.trim().toLowerCase();
+        if (term.length < 1) {
+          clearSuggestions();
+          return;
+        }
+        const availableKeywords = jobKeywordsSuggestions.filter(
+          (kw) => !selectedKeywords.has(kw.toLowerCase())
+        );
+        let filteredKeywords = availableKeywords
+          .filter((kw) => kw.toLowerCase().includes(term))
+          .slice(0, 8);
+        if (filteredKeywords.length > 0) {
+          displaySuggestions(filteredKeywords);
+        } else {
+          clearSuggestions();
+        }
+      }
+      function displaySuggestions(suggestions) {
+        suggestionsList.innerHTML = "";
+        suggestions.forEach((kw) => {
+          const li = document.createElement("li");
+          li.textContent = kw;
+          li.addEventListener("mousedown", (e) => {
+            e.preventDefault();
+            addKeyword(kw.toLowerCase());
+          });
+          suggestionsList.appendChild(li);
+        });
+        suggestionsList.classList.remove("hidden");
+      }
+      function clearSuggestions() {
+        if (suggestionsList) {
+          suggestionsList.classList.add("hidden");
+          suggestionsList.innerHTML = "";
+        }
+      }
+      function handleSearchSubmit(event) {
+        event.preventDefault();
+        const keyword = searchInput.value.trim();
+        if (keyword) {
+          addKeyword(keyword.toLowerCase());
+        }
+      }
+      function addKeyword(keyword) {
+        keyword = keyword.trim();
+        if (!keyword || keyword.length < 2 || selectedKeywords.has(keyword)) {
+          searchInput.value = "";
+          clearSuggestions();
+          return;
+        }
+        selectedKeywords.add(keyword);
+        searchInput.value = "";
+        clearSuggestions();
+        updateSelectedKeywordsUI();
+      }
+      function removeKeyword(keywordToRemove) {
+        if (!selectedKeywords.has(keywordToRemove)) return;
+        selectedKeywords.delete(keywordToRemove);
+        updateSelectedKeywordsUI();
+      }
+      function renderKeywordPills(targetContainer) {
+        targetContainer.innerHTML = "";
+        const sortedKeywords = [...selectedKeywords].sort();
+        if (selectedKeywords.size === 0) {
+          if (!placeholderText) {
+            placeholderText = document.createElement("span");
+            placeholderText.className = "placeholder-text";
+            placeholderText.textContent =
+              "Your selected filters will appear here...";
+          }
+          targetContainer.appendChild(placeholderText);
+          placeholderText.style.display = "block";
+          targetContainer.classList.add("is-empty");
+        } else {
+          if (placeholderText) {
+            placeholderText.style.display = "none";
+          }
+          targetContainer.classList.remove("is-empty");
+          sortedKeywords.forEach((keyword) => {
+            const pill = document.createElement("span");
+            pill.className = "keyword-pill";
+            pill.textContent = keyword;
+            const removeBtn = document.createElement("button");
+            removeBtn.className = "remove-keyword";
+            removeBtn.innerHTML = "×";
+            removeBtn.title = `Remove ${keyword}`;
+            removeBtn.setAttribute("aria-label", `Remove ${keyword}`);
+            removeBtn.addEventListener("click", (e) => {
+              e.stopPropagation();
+              removeKeyword(keyword);
+            });
+            pill.appendChild(removeBtn);
+            targetContainer.appendChild(pill);
+          });
+        }
+      }
+      function updateSelectedKeywordsUI() {
+        renderKeywordPills(selectedKeywordsContainer);
+      }
+      function openOverlay() {
+        searchOverlay.classList.add("visible");
+        document.body.classList.add("overlay-open");
+        searchInput.focus();
+        updateSelectedKeywordsUI();
+      }
+      function closeOverlay() {
+        searchOverlay.classList.remove("visible");
+        document.body.classList.remove("overlay-open");
+        clearSuggestions();
+      }
+      function performFinalSearch() {
+        const keywordsString = [...selectedKeywords].join(" ");
+        const locationString = overlayLocationInput.value.trim();
+        closeOverlay();
+        if (!keywordsString) {
+          jobListingsContainer.innerHTML =
+            '<p style="text-align: center; color: #888; margin-top: 20px;">Please select keywords in the filter <svg style="width: 1em; height: 1em; vertical-align: -0.15em; fill:#888;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg> to search.</p>';
+          jobCountSpan.textContent = "0";
+          return;
+        }
+        setTimeout(() => {
+          fetchJobs(keywordsString, locationString);
+        }, 50);
+      }
+
+      // === Event Listeners ===
+      searchIconButton.addEventListener("click", openOverlay);
+      overlayCloseBtn.addEventListener("click", closeOverlay);
+      searchOverlay.addEventListener("click", (event) => {
+        if (event.target === searchOverlay) {
+          closeOverlay();
+        }
+      });
+      searchInput.addEventListener("input", handleSearchInput);
+      searchInput.addEventListener("blur", () =>
+        setTimeout(clearSuggestions, 150)
+      );
+      searchForm.addEventListener("submit", handleSearchSubmit);
+      finalSearchBtn.addEventListener("click", performFinalSearch);
+    </script>
+  </body>
+</html>

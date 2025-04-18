@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Loading...</title>
+    <!-- Favicon Links -->
+    <link rel="icon" type="image/png" href="green/logo--green.png" />
+    <link rel="shortcut icon" type="image/png" href="green/logo--green.png" />
+    <!-- Optional: Apple Touch Icon (for iOS home screen) -->
+    <!-- <link rel="apple-touch-icon" href="green/logo--green.png"> -->
+    <style>
+      /* Basic Reset */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      /* Full screen styling */
+      html,
+      body {
+        height: 100vh; /* Full viewport height */
+        width: 100%; /* Full viewport width */
+        overflow: hidden; /* Hide scrollbars */
+        background-color: #151515; /* Dark background, adjust as needed */
+        display: flex; /* Use flexbox for easy centering */
+        justify-content: center; /* Center horizontally */
+        align-items: center; /* Center vertically */
+        font-family: sans-serif; /* Basic fallback font */
+      }
+
+      /* Styling for the GIF */
+      .loading-gif {
+        display: block; /* Treat as a block element */
+        max-width: 60vh; /* Limit GIF width, adjust as needed */
+        max-height: 60vh; /* Limit GIF height, adjust as needed */
+        width: auto; /* Maintain aspect ratio */
+        height: auto; /* Maintain aspect ratio */
+      }
+    </style>
+  </head>
+  <body>
+    <!-- The loading GIF -->
+    <img src="gif/Logo.gif" alt="Loading..." class="loading-gif" />
+
+    <!-- JavaScript for redirection -->
+    <script>
+      // Wait for a specified time (in milliseconds) then redirect
+      const redirectDelay = 3000; // 3000ms = 3 seconds
+
+      setTimeout(() => {
+        // Redirect to home.html
+        window.location.href = "home.html";
+      }, redirectDelay);
+    </script>
+  </body>
+</html>

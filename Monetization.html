@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Monetization</title>
+    <!-- Generic Title -->
+    <!-- Favicon Links -->
+    <link rel="icon" type="image/png" href="green/logo--green.png" />
+    <link rel="shortcut icon" type="image/png" href="green/logo--green.png" />
+    <!-- Optional: Apple Touch Icon (for iOS home screen) -->
+    <!-- <link rel="apple-touch-icon" href="green/logo--green.png"> -->
+    <!-- Google Font Import -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      /* --- Combined CSS --- */
+
+      /* CSS Reset */
+      a,
+      button,
+      input,
+      select,
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        border: none;
+        text-decoration: none;
+        background: none;
+        -webkit-font-smoothing: antialiased;
+        font-family: "Inter", sans-serif;
+        font-weight: 400;
+      }
+      menu,
+      ol,
+      ul {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+      }
+
+      /* CSS Variables */
+      :root {
+        --theme-green: #01b581;
+        --background-dark-primary: #151515;
+        --text-light-primary: #ffffff;
+        --text-light-secondary: #bbb;
+        --text-light-tertiary: #7b7b83;
+        --border-dark: #6e6e75;
+        --gradient-user-start: #fff600;
+        --gradient-user-end: #f42bff;
+        --gradient-business-start: #c078ff;
+        --gradient-business-end: #ff2828;
+        --button-text-dark: #000000;
+        --background-dark-tertiary: #2c2c2c;
+        --text-token-subtitle: #ffffff;
+      }
+
+      html {
+        overflow-x: hidden;
+      }
+
+      body {
+        background: var(--background-dark-primary);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        padding: 0px 0;
+      }
+
+      /* Main container */
+      .monetization-container {
+        width: 100%;
+        max-width: 390px;
+        min-height: 812px;
+        /* === MODIFICATION: Added position: relative and adjusted padding === */
+        position: relative; /* Establish positioning context for absolute children */
+        padding-bottom: 150px; /* Increased padding to prevent overlap with fixed actions */
+        /* === END MODIFICATION === */
+        overflow-x: hidden;
+        overflow-y: auto; /* Allow vertical scroll for content */
+        background: var(--background-dark-primary);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      /* Header: User | Business */
+      .user-business-container {
+        width: 100%;
+        text-align: center;
+        margin-top: 70px;
+        margin-bottom: 50px;
+        flex-shrink: 0;
+      }
+      .user-business {
+        display: inline-block;
+        font-size: 15px;
+        font-weight: 400;
+      }
+      /* Make spans clickable */
+      .user-business span {
+        cursor: pointer;
+        transition: color 0.2s ease;
+      }
+      .user-business .active {
+        color: var(--theme-green);
+      }
+      .user-business .inactive {
+        color: var(--text-light-tertiary);
+      }
+      .user-business .separator {
+        color: var(--theme-green);
+        margin: 0 5px;
+        cursor: default;
+      }
+      .user-business .inactive:hover {
+        color: var(--text-light-secondary);
+      } /* Hover for inactive */
+
+      /* --- User View Specific --- */
+      #user-content {
+        width: 100%;
+        display: flex; /* Use flex for internal alignment */
+        flex-direction: column;
+        align-items: center;
+        /* === ADDED === */
+        padding-bottom: 20px; /* Add some space before the absolute actions start */
+      }
+
+      .page-title-container.user-title {
+        margin-bottom: 25px;
+      } /* User specific margin */
+      .premium-user {
+        display: inline-block;
+        background: linear-gradient(
+          180deg,
+          var(--gradient-user-start) 0%,
+          var(--gradient-user-end) 81.25%
+        );
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-size: 24px;
+        font-weight: 700;
+      }
+      .feature-icon-container {
+        width: 100%;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px 15px;
+        padding: 0 20px;
+        margin-top: 10px;
+        margin-bottom: 40px;
+        flex-shrink: 0;
+      }
+      .feature-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+      .feature-item:nth-child(3) {
+        grid-column: 1 / -1;
+        justify-self: center;
+        margin-top: 15px;
+      }
+      .feature-icon {
+        width: 60px;
+        height: 60px;
+        margin-bottom: 15px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: var(--theme-green);
+      }
+      .feature-icon img {
+        width: 48px;
+        height: 48px;
+      } /* Use img instead of svg */
+      .feature-text {
+        color: var(--text-light-primary);
+        font-size: 11px;
+        font-weight: 600;
+        line-height: 1.4;
+      }
+
+      /* --- Business View Specific --- */
+      #business-content {
+        width: 100%;
+        display: none; /* Initially hidden */
+        flex-direction: column;
+        align-items: center;
+        /* === ADDED === */
+        padding-bottom: 20px; /* Add some space before the absolute actions start */
+      }
+
+      .page-title-container.business-title {
+        margin-bottom: 40px;
+      } /* Business specific margin */
+      .prime-business {
+        display: inline-block;
+        background: linear-gradient(
+          180deg,
+          var(--gradient-business-start) 0%,
+          var(--gradient-business-end) 100%
+        );
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-size: 24px;
+        font-weight: 700;
+      }
+      .token-info-container {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 40px;
+      }
+      .token-icon {
+        width: 50px;
+        height: 50px;
+        margin-bottom: 15px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: var(--theme-green);
+      }
+      .token-icon img {
+        width: 48px;
+        height: 48px;
+      } /* Use img */
+      .token-subtitle {
+        color: var(--text-token-subtitle);
+        font-size: 11px;
+        font-weight: 600;
+        text-align: center;
+      }
+
+      /* --- Shared Styles (Subscription Boxes, Actions) --- */
+      .subscription-container {
+        width: calc(100% - 40px);
+        max-width: 328px;
+        position: relative;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+        flex-shrink: 0;
+        /* === REMOVED margin-bottom: 40px; === */
+        /* Spacing now handled by container padding and absolute positioning */
+      }
+      .subscription-box {
+        background: none;
+        border-radius: 5px;
+        border: 1px solid var(--border-dark);
+        width: 100%;
+        height: 93px;
+        position: relative;
+        cursor: pointer;
+        transition: border-color 0.2s ease-in-out;
+      }
+      .subscription-box.selected {
+        border-color: var(--theme-green);
+      }
+      .subscription-box::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 59px;
+        border-top: 1px solid var(--border-dark);
+        border-radius: 0 0 5px 5px;
+        pointer-events: none;
+        transition: border-color 0.2s ease-in-out;
+        background-color: var(--background-dark-tertiary);
+        z-index: 0;
+      }
+      .subscription-box.selected::after {
+        border-color: var(--theme-green);
+      }
+
+      /* Text positioning inside USER boxes */
+      ._3-day-free-trial,
+      ._7-day-free-trial {
+        color: var(--text-light-primary);
+        font-size: 13px;
+        font-weight: 400;
+        position: absolute;
+        left: 19px;
+        top: 8px;
+        z-index: 1;
+      }
+      .monthly,
+      .yearly {
+        color: var(--text-light-primary);
+        font-size: 14px;
+        font-weight: 600;
+        position: absolute;
+        left: 19px;
+        bottom: 22px;
+        z-index: 1;
+      }
+      ._0-99-month,
+      ._9-99-year {
+        color: var(--text-light-primary);
+        font-size: 14px;
+        font-weight: 600;
+        position: absolute;
+        right: 19px;
+        bottom: 22px;
+        z-index: 1;
+      }
+
+      /* Text positioning inside BUSINESS boxes */
+      .token-amount {
+        color: var(--text-light-primary);
+        font-size: 13px;
+        font-weight: 400;
+        position: absolute;
+        left: 19px;
+        top: 8px;
+        z-index: 1;
+      }
+      .plan-name {
+        color: var(--text-light-primary);
+        font-size: 14px;
+        font-weight: 600;
+        position: absolute;
+        left: 19px;
+        bottom: 22px;
+        z-index: 1;
+      }
+      .plan-price {
+        color: var(--text-light-primary);
+        font-size: 14px;
+        font-weight: 600;
+        position: absolute;
+        right: 19px;
+        bottom: 22px;
+        z-index: 1;
+      }
+
+      /* Actions Container (Shared) */
+      .actions-container {
+        /* === MODIFICATION: Absolute positioning === */
+        position: absolute;
+        bottom: 40px; /* Distance from the bottom of monetization-container */
+        left: 50%; /* Center horizontally */
+        transform: translateX(-50%); /* Precise centering */
+        width: calc(100% - 40px); /* Control width */
+        max-width: 328px; /* Max width like subscription boxes */
+        /* === END MODIFICATION === */
+
+        /* Flex properties still needed for internal alignment */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        z-index: 2; /* Ensure it's above the ::after pseudo-elements if needed */
+      }
+      .continue-button {
+        background: var(--theme-green);
+        border-radius: 67px;
+        width: 100%;
+        height: 45px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        transition: filter 0.2s ease;
+        margin-bottom: 25px;
+      }
+      .continue-button:hover,
+      .continue-button:active {
+        filter: brightness(90%);
+      }
+      .continue {
+        color: var(--button-text-dark);
+        text-align: center;
+        font-size: 14px;
+        font-weight: 800;
+      }
+      .restore-purchase,
+      .proceed-with-ads {
+        color: var(--text-light-tertiary);
+        text-align: center;
+        font-size: 11px;
+        font-weight: 400;
+        text-decoration: underline;
+        cursor: pointer;
+        transition: color 0.2s ease;
+      }
+      .restore-purchase {
+        margin-bottom: 10px;
+      }
+      .restore-purchase:hover,
+      .restore-purchase:active,
+      .proceed-with-ads:hover,
+      .proceed-with-ads:active {
+        color: var(--text-light-primary);
+      }
+      /* Footer / Bottom Nav */
+      footer.bottom-nav {
+        background-color: #151515;
+        padding: 8px 0;
+        position: fixed; /* Keep fixed */
+        bottom: 0;
+        left: 0; /* Anchor to left */
+        right: 0; /* Anchor to right */
+        width: 100%; /* Take full viewport width */
+        max-width: var(--card-max-width); /* Max width */
+        margin: 0 auto; /* Center the footer */
+        z-index: 50;
+        box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.15);
+        box-sizing: border-box; /* Include padding in width */
+        /* Adjust position if app-container has rounded corners */
+        border-bottom-left-radius: 10px;
+        border-bottom-right-radius: 10px;
+      }
+
+      .nav-icons {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        height: 100%;
+        margin: 0 auto;
+      }
+
+      .nav-item {
+        display: block;
+        flex: 1;
+        text-align: center;
+        padding: 5px;
+        text-decoration: none;
+        color: inherit;
+        cursor: pointer;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .nav-item img {
+        width: 28px;
+        height: 28px;
+        display: block;
+        opacity: 0.6;
+        transition: opacity 0.2s ease;
+      }
+
+      .nav-item:hover img {
+        opacity: 0.8;
+      }
+
+      .nav-item.active img {
+        opacity: 1;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="monetization-container">
+      <!-- Header (Shared) -->
+      <div class="user-business-container">
+        <div class="user-business">
+          <span id="user-toggle" class="active">User</span>
+          <!-- Added ID -->
+          <span class="separator">|</span>
+          <span id="business-toggle" class="inactive">Business</span>
+          <!-- Added ID -->
+        </div>
+      </div>
+
+      <!-- User Content Area -->
+      <div id="user-content">
+        <div class="page-title-container user-title">
+          <div class="premium-user">Premium user</div>
+        </div>
+
+        <div class="feature-icon-container">
+          <div class="feature-item">
+            <div class="feature-icon">
+              <img src="green/waitinglist-green.png" alt="Waiting List Icon" />
+            </div>
+            <div class="feature-text">Waiting list prioritize</div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">
+              <img src="green/star-green.png" alt="Star Icon" />
+            </div>
+            <div class="feature-text">Access to wishlist</div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">
+              <img src="green/noads-green.png" alt="No Ads Icon" />
+            </div>
+            <div class="feature-text">Ad-free experience</div>
+          </div>
+        </div>
+
+        <div class="subscription-container">
+          <div class="subscription-box" data-plan="user-monthly">
+            <!-- Unique data-plan -->
+            <div class="_3-day-free-trial">3-day FREE trial</div>
+            <div class="monthly">Monthly</div>
+            <div class="_0-99-month">0.99$/month</div>
+          </div>
+          <div class="subscription-box selected" data-plan="user-yearly">
+            <!-- Unique data-plan -->
+            <div class="_7-day-free-trial">7-day FREE trial</div>
+            <div class="yearly">Yearly</div>
+            <div class="_9-99-year">9.99$/year</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Business Content Area (Initially Hidden) -->
+      <div id="business-content">
+        <div class="page-title-container business-title">
+          <div class="prime-business">Prime business</div>
+        </div>
+
+        <div class="token-info-container">
+          <div class="token-icon">
+            <img src="green/token-green.png" alt="Token Icon" />
+          </div>
+          <div class="token-subtitle">
+            Stack your tokens and start posting now!
+          </div>
+        </div>
+
+        <div class="subscription-container">
+          <div class="subscription-box" data-plan="business-growing">
+            <!-- Unique data-plan -->
+            <div class="token-amount">1 Token</div>
+            <div class="plan-name">Growing business</div>
+            <div class="plan-price">12$/month</div>
+          </div>
+          <div class="subscription-box" data-plan="business-expanding">
+            <!-- Unique data-plan -->
+            <div class="token-amount">5 Tokens</div>
+            <div class="plan-name">Expanding business</div>
+            <div class="plan-price">49$/month</div>
+          </div>
+          <div
+            class="subscription-box selected"
+            data-plan="business-enterprise"
+          >
+            <!-- Unique data-plan -->
+            <div class="token-amount">20 Tokens</div>
+            <div class="plan-name">Large Enterprise</div>
+            <div class="plan-price">99$/month</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions (Shared & Absolutely Positioned) -->
+      <div class="actions-container">
+        <div class="continue-button">
+          <a href="wishlist.html" class="continue-button-link">
+            <div class="continue">Continue</div>
+          </a>
+        </div>
+        <a href="#" class="restore-purchase">Restore Purchase</a>
+        <a href="home.html" class="proceed-with-ads">Proceed with Ads</a>
+      </div>
+    </div>
+
+    <footer class="bottom-nav">
+      <div class="nav-icons">
+        <a href="home.html" class="nav-item" title="Home">
+          <img src="normal/logo.png" alt="Home" />
+        </a>
+        <a href="search.html" class="nav-item" title="Search Jobs">
+          <img src="normal/search.png" alt="Search Jobs" />
+        </a>
+        <!-- Current page - marked active -->
+        <a href="Monetization.html" class="nav-item active" title="Starred">
+          <img src="green/star-green.png" alt="Starred" />
+        </a>
+        <a href="favorite.html" class="nav-item" title="Liked">
+          <img src="normal/heart.png" alt="Liked" />
+        </a>
+        <a href="signin1.html" class="nav-item" title="Profile">
+          <img src="normal/user.png" alt="Profile" />
+        </a>
+      </div>
+    </footer>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        // Toggles
+        const userToggle = document.getElementById("user-toggle");
+        const businessToggle = document.getElementById("business-toggle");
+
+        // Content Areas
+        const userContent = document.getElementById("user-content");
+        const businessContent = document.getElementById("business-content");
+
+        // Action Buttons/Links (assuming they are shared)
+        const continueButton = document.querySelector(".continue-button");
+        const restoreLink = document.querySelector(".restore-purchase");
+        const proceedLink = document.querySelector(".proceed-with-ads"); // Keep this if needed elsewhere, even if href is set
+
+        // --- State ---
+        let currentView = "user"; // 'user' or 'business'
+        let selectedPlan = null; // Will hold the data-plan of the selected box
+
+        // --- Functions ---
+        function updateSelectedPlan() {
+          const activeContainer =
+            currentView === "user" ? userContent : businessContent;
+          const selectedBox = activeContainer.querySelector(
+            ".subscription-box.selected"
+          );
+          selectedPlan = selectedBox ? selectedBox.dataset.plan : null;
+          console.log(`Selected plan updated to: ${selectedPlan}`);
+        }
+
+        function showUserView() {
+          currentView = "user";
+          userContent.style.display = "flex"; // Show user content
+          businessContent.style.display = "none"; // Hide business content
+
+          userToggle.classList.add("active");
+          userToggle.classList.remove("inactive");
+          businessToggle.classList.add("inactive");
+          businessToggle.classList.remove("active");
+
+          // Make sure only one box is selected within this view
+          const userBoxes = userContent.querySelectorAll(".subscription-box");
+          if (
+            !userContent.querySelector(".subscription-box.selected") &&
+            userBoxes.length > 0
+          ) {
+            // If nothing selected, default to a specific one (e.g., yearly) or first
+            const yearlyBox = userContent.querySelector(
+              '[data-plan="user-yearly"]'
+            );
+            if (yearlyBox) {
+              userBoxes.forEach((box) => box.classList.remove("selected")); // Deselect others first
+              yearlyBox.classList.add("selected");
+            } else {
+              userBoxes.forEach((box, index) =>
+                box.classList.toggle("selected", index === 0)
+              ); // Fallback to first
+            }
+          } else if (
+            userBoxes.length > 0 &&
+            !userContent.querySelector(".subscription-box.selected")
+          ) {
+            // Ensure *something* is selected if boxes exist
+            userBoxes[0].classList.add("selected");
+          }
+          // Deselect all in the other view (optional but good practice)
+          businessContent
+            .querySelectorAll(".subscription-box")
+            .forEach((box) => box.classList.remove("selected"));
+
+          updateSelectedPlan(); // Update plan based on visible selection
+        }
+
+        function showBusinessView() {
+          currentView = "business";
+          businessContent.style.display = "flex"; // Show business content
+          userContent.style.display = "none"; // Hide user content
+
+          businessToggle.classList.add("active");
+          businessToggle.classList.remove("inactive");
+          userToggle.classList.add("inactive");
+          userToggle.classList.remove("active");
+
+          // Make sure only one box is selected within this view
+          const businessBoxes =
+            businessContent.querySelectorAll(".subscription-box");
+          if (
+            !businessContent.querySelector(".subscription-box.selected") &&
+            businessBoxes.length > 0
+          ) {
+            // Default to enterprise or first
+            const enterpriseBox = businessContent.querySelector(
+              '[data-plan="business-enterprise"]'
+            );
+            if (enterpriseBox) {
+              businessBoxes.forEach((box) => box.classList.remove("selected")); // Deselect others first
+              enterpriseBox.classList.add("selected");
+            } else {
+              businessBoxes.forEach((box, index) =>
+                box.classList.toggle("selected", index === 0)
+              ); // Fallback to first
+            }
+          } else if (
+            businessBoxes.length > 0 &&
+            !businessContent.querySelector(".subscription-box.selected")
+          ) {
+            // Ensure *something* is selected if boxes exist
+            businessBoxes[0].classList.add("selected");
+          }
+          // Deselect all in the other view
+          userContent
+            .querySelectorAll(".subscription-box")
+            .forEach((box) => box.classList.remove("selected"));
+
+          updateSelectedPlan(); // Update plan based on visible selection
+        }
+
+        // --- Event Listeners ---
+
+        // View Toggling
+        userToggle.addEventListener("click", () => {
+          if (currentView !== "user") {
+            showUserView();
+          }
+        });
+
+        businessToggle.addEventListener("click", () => {
+          if (currentView !== "business") {
+            showBusinessView();
+          }
+        });
+
+        // Subscription Box Selection (Apply to ALL boxes, logic handles visibility)
+        document.querySelectorAll(".subscription-box").forEach((box) => {
+          box.addEventListener("click", () => {
+            // Find the container (user or business) this box belongs to
+            const parentContainer = box.closest(
+              "#user-content, #business-content"
+            );
+            if (!parentContainer) return; // Should not happen
+
+            // Only proceed if the box is within the currently active view
+            if (
+              (currentView === "user" &&
+                parentContainer.id === "user-content") ||
+              (currentView === "business" &&
+                parentContainer.id === "business-content")
+            ) {
+              // Remove 'selected' from siblings within the *same* container
+              parentContainer
+                .querySelectorAll(".subscription-box")
+                .forEach((innerBox) => {
+                  innerBox.classList.remove("selected");
+                });
+              // Add 'selected' to the clicked box
+              box.classList.add("selected");
+              // Update the global selected plan variable
+              updateSelectedPlan();
+            }
+          });
+        });
+
+        // Action Button/Link Logic (Remains mostly the same)
+        if (continueButton) {
+          continueButton.addEventListener("click", () => {
+            if (selectedPlan) {
+              console.log(
+                `Continue button clicked with plan: ${selectedPlan} (View: ${currentView})`
+              );
+              // Add logic here - you know the plan and the view type
+            } else {
+              console.warn("Continue button clicked, but no plan selected.");
+              // Maybe briefly highlight the selection boxes or show a message
+            }
+          });
+        }
+
+        if (restoreLink) {
+          restoreLink.addEventListener("click", (e) => {
+            e.preventDefault();
+            console.log("Restore Purchase clicked");
+            // Add restore logic here
+          });
+        } // <<< --- CORRECTED BRACE --- >>>
+
+        // Note: No specific listener needed for proceedLink if just using href navigation
+
+        // --- Initial Setup ---
+        showUserView(); // Start with the user view by default
+      }); // End DOMContentLoaded
+    </script>
+  </body>
+</html>

@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Log In</title>
+
+    <!-- Favicon Links -->
+    <script
+      type="text/javascript"
+      nonce="46db8db671e041fab253822afa5"
+      src="//local.adguard.org?ts=1744814149720&amp;type=content-script&amp;dmn=cdn.discordapp.com&amp;url=https%3A%2F%2Fcdn.discordapp.com%2Fattachments%2F1240634532714250313%2F1362089236630601779%2Fsignin2.html%3Fex%3D68011ff4%26is%3D67ffce74%26hm%3D527847c8cc91bae2ce4c9a11da2307e00af7ce407202f0ba9ea9afca1346e251%26&amp;app=chrome.exe&amp;css=3&amp;js=1&amp;rel=1&amp;rji=1&amp;sbe=1"
+    ></script>
+    <script
+      type="text/javascript"
+      nonce="46db8db671e041fab253822afa5"
+      src="//local.adguard.org?ts=1744814149720&amp;name=AdGuard%20Extra&amp;name=AdGuard%20Popup%20Blocker&amp;type=user-script"
+    ></script>
+    <link rel="icon" type="image/png" href="green/logo--green.png" />
+    <link rel="shortcut icon" type="image/png" href="green/logo--green.png" />
+    <!-- Optional: Apple Touch Icon (for iOS home screen) -->
+    <!-- <link rel="apple-touch-icon" href="green/logo--green.png"> -->
+    <!-- Google Fonts Import - Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      /* Styles remain the same */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, Helvetica, Arial, sans-serif;
+        background-color: #151515;
+        color: #e0e0e0;
+        overflow: hidden;
+      }
+      .app-container {
+        width: 100%;
+        height: 100%;
+        max-width: 450px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        background-color: #151515;
+      }
+      .header {
+        padding: 50px 20px 15px 20px;
+      } /* Adjusted padding */
+      .back-button {
+        text-decoration: none;
+        display: inline-block;
+        cursor: pointer;
+      }
+      .back-button img {
+        display: block;
+        height: 20px;
+        width: auto;
+        transform: rotate(180deg);
+      }
+      h1 {
+        font-size: 1.7em;
+        font-weight: 700;
+        color: #ffffff;
+        text-align: center;
+        margin-bottom: 45px;
+        margin-top: 10px;
+      }
+      .form-group {
+        margin-bottom: 25px;
+        position: relative;
+      }
+      label {
+        display: block;
+        font-size: 0.8em;
+        color: #a0a2a4;
+        margin-bottom: 8px;
+        font-weight: 500;
+      }
+      input[type="email"],
+      input[type="password"],
+      input[type="text"] {
+        width: 100%;
+        padding: 15px 18px;
+        background-color: #2c2f31;
+        border: none;
+        border-radius: 12px;
+        color: #ffffff;
+        font-size: 1em;
+        font-family: "Inter", sans-serif;
+      }
+      input::placeholder {
+        color: #77797b; /* Grey derived for placeholder */
+      }
+      .password-wrapper {
+        position: relative;
+      }
+      .toggle-password {
+        position: absolute;
+        right: 18px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        color: #a0a29dc2;
+        font-size: 1.2em;
+        user-select: none;
+      }
+      .toggle-password.visible {
+        color: #01b581;
+      }
+      .forgot-password {
+        display: block;
+        margin-top: -15px;
+        margin-bottom: 30px;
+        color: #427db8;
+        text-decoration: none;
+        font-size: 0.8em;
+        font-weight: 500;
+        text-align: left;
+      }
+      .forgot-password:hover {
+        text-decoration: underline;
+      }
+      .btn-login {
+        width: 100%;
+        padding: 16px 20px;
+        background-color: #01b581;
+        color: #151515;
+        border: none;
+        border-radius: 50px;
+        font-size: 1em;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: "Inter", sans-serif;
+        transition: background-color 0.2s ease, opacity 0.2s ease;
+        margin-top: auto;
+      }
+      .btn-login:hover {
+        opacity: 0.9;
+      }
+      .keyboard-placeholder {
+        display: none;
+      }
+      .main-content {
+        flex-grow: 1;
+        padding: 10px 30px 30px 30px;
+        display: flex;
+        flex-direction: column;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app-container">
+      <div class="header">
+        <a href="signin1.html" class="back-button">
+          <!-- Consider linking this back appropriately -->
+          <img src="green/arrow-green.png" alt="Back" />
+        </a>
+      </div>
+
+      <div class="main-content">
+        <h1>Looking for a job?</h1>
+
+        <!-- Form ID is still useful for selecting elements -->
+        <form id="login-form">
+          <div class="form-group">
+            <label for="email">Email or Phone Number</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              value="taiyo1405@gmail.com"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="password">Password</label>
+            <div class="password-wrapper">
+              <input
+                type="password"
+                id="password"
+                name="password"
+                value="************"
+                required
+              />
+              <span class="toggle-password" id="togglePassword">👁️</span>
+            </div>
+          </div>
+
+          <a href="#" class="forgot-password">Forgot your password?</a>
+
+          <!-- MODIFIED: Changed type to "button" and added an ID -->
+          <button type="button" id="loginButton" class="btn-login">
+            Log In
+          </button>
+        </form>
+      </div>
+
+      <div class="keyboard-placeholder"></div>
+    </div>
+
+    <script>
+      // Password toggle script (remains the same)
+      const passwordInput = document.getElementById("password");
+      const togglePasswordButton = document.getElementById("togglePassword");
+
+      if (togglePasswordButton && passwordInput) {
+        // Added check for existence
+        togglePasswordButton.addEventListener("click", function () {
+          const type =
+            passwordInput.getAttribute("type") === "password"
+              ? "text"
+              : "password";
+          passwordInput.setAttribute("type", type);
+          if (type === "text") {
+            this.textContent = "👁️‍🗨️";
+            this.classList.add("visible");
+          } else {
+            this.textContent = "👁️";
+            this.classList.remove("visible");
+          }
+        });
+      }
+
+      // Optional focus/blur handlers (remain the same)
+      if (passwordInput) {
+        // Added check for existence
+        passwordInput.addEventListener("focus", function () {
+          if (this.value === "************") {
+            // this.value = '';
+          }
+        });
+        passwordInput.addEventListener("blur", function () {
+          if (this.value === "") {
+            // this.value = '************';
+          }
+        });
+      }
+
+      // --- MODIFIED: Login Button Click Listener ---
+      const loginButton = document.getElementById("loginButton");
+
+      if (loginButton) {
+        // Check if button exists
+        loginButton.addEventListener("click", function () {
+          console.log("Login button clicked, navigating to home.html");
+          // Navigate to home.html
+          window.location.href = "user.html";
+          // You can add validation logic here before navigating if needed
+        });
+      }
+
+      // --- REMOVED/COMMENTED OUT: Original form submission listener ---
+      /*
+        const form = document.getElementById('login-form');
+        if (form) { // Check if form exists
+            form.addEventListener('submit', function(event) {
+                event.preventDefault();
+                console.log('Login attempt submitted');
+                alert('Log In button clicked!');
+            });
+        }
+        */
+    </script>
+  </body>
+</html>

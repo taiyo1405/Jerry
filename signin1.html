@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Log In</title>
+
+    <!-- Favicon Links -->
+    <link rel="icon" type="image/png" href="green/logo--green.png" />
+    <link rel="shortcut icon" type="image/png" href="green/logo--green.png" />
+    <!-- Optional: Apple Touch Icon (for iOS home screen) -->
+    <!-- <link rel="apple-touch-icon" href="green/logo--green.png"> -->
+    <!-- Google Fonts Import - Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      /* Basic Reset */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        height: 100%;
+        font-family: "Inter", sans-serif;
+        font-weight: 200; /* Note: Inter doesn't have a standard 200 weight, 400 (Regular) will likely be used */
+        background-color: #151515;
+        color: #ffffff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .app-container {
+        width: 100%;
+        max-width: 400px;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 60px 30px 40px 30px;
+        text-align: center;
+        overflow-y: auto;
+      }
+
+      .content {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+      h1 {
+        font-size: 36px;
+        font-weight: 700;
+        color: #00cf94;
+        margin-bottom: 20px;
+        line-height: 1.2;
+      }
+
+      p {
+        font-size: 12px;
+        font-weight: 400;
+        color: #e0e0e0;
+        line-height: 1.6;
+        margin-bottom: 40px;
+      }
+
+      .button-container {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .btn {
+        /* Styles applied to <a> tags now */
+        display: block; /* Important for anchors to take full width */
+        padding: 16px 20px;
+        border: none;
+        border-radius: 50px;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background-color 0.2s ease, opacity 0.2s ease;
+        width: 100%;
+        font-family: "Inter", sans-serif;
+        text-align: center; /* Ensure text remains centered */
+        text-decoration: none; /* MODIFIED: Remove link underline */
+      }
+
+      .btn:hover {
+        opacity: 0.9;
+      }
+
+      .btn-register {
+        background-color: #c8fff4;
+        color: #151515;
+        font-size: 1em;
+      }
+
+      .btn-login {
+        background-color: #00cf94;
+        color: #151515;
+        font-size: 1em; /* Dark text on teal button */
+      }
+
+      /* Adjustments for very small screens remain the same */
+      @media (max-height: 600px) {
+        .app-container {
+          padding-top: 40px;
+          padding-bottom: 30px;
+        }
+        h1 {
+          font-size: 2.4em;
+          margin-bottom: 15px;
+        }
+        p {
+          font-size: 0.95em;
+          margin-bottom: 30px;
+        }
+        .btn {
+          padding: 14px 18px;
+          font-size: 1em;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app-container">
+      <div class="content">
+        <h1>Swipe. Match.<br />Get Hired!</h1>
+        <p>
+          Instantly match with companies that align with your skills and
+          interests.
+        </p>
+      </div>
+
+      <div class="button-container">
+        <!-- MODIFIED: Changed buttons to links -->
+        <a href="register.html" class="btn btn-register">Register</a>
+        <a href="signin2.html" class="btn btn-login">Log In</a>
+      </div>
+    </div>
+
+    <!-- No JavaScript needed for basic navigation -->
+  </body>
+</html>

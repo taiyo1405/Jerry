@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Favorite</title>
+    <!-- Favicon Links -->
+    <link rel="icon" type="image/png" href="green/logo--green.png" />
+    <link rel="shortcut icon" type="image/png" href="green/logo--green.png" />
+    <!-- Link to Google Fonts for Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      /* --- ADDED :root variables --- */
+      :root {
+        --card-max-width: 600px; /* Or your preferred max width */
+        --footer-height: 54px; /* Define footer height */
+      }
+      /* --------------------------- */
+
+      /* --- Body styles --- */
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        background-color: #151515;
+        font-family: "Inter", Arial, sans-serif;
+        color: #e0e0e0;
+        overflow: hidden; /* Prevent body scrolling */
+      }
+
+      /* --- App Container --- */
+      .app-container {
+        width: 100%;
+        max-width: var(--card-max-width);
+        height: 100vh; /* Full viewport height */
+        margin: 0 auto; /* Center horizontally */
+        background-color: #151515;
+        position: relative;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        display: flex;
+        flex-direction: column;
+        box-sizing: border-box;
+        /* --- Padding FOR fixed footer --- */
+        padding-bottom: var(--footer-height);
+        overflow: hidden; /* Container clips content */
+      }
+
+      @media (min-width: 768px) {
+        /* Optional: Add margin/radius on larger screens */
+        .app-container {
+          height: calc(100vh - 40px);
+          margin: 20px auto;
+          border-radius: 10px;
+          padding-bottom: var(--footer-height);
+        }
+      }
+
+      /* --- Top Bar --- */
+      .top-bar {
+        background: #ededed;
+        padding: 40px 16px; /* Simpler padding */
+        position: relative;
+        text-align: center;
+        flex-shrink: 0;
+        z-index: 5;
+      }
+
+      .title {
+        font-size: 24px;
+        font-weight: bold;
+        color: #151515;
+        margin-bottom: 5px;
+      }
+      .subtitle {
+        font-size: 14px;
+        color: #151515;
+        margin-top: 4px;
+      }
+
+      /* --- Job List --- */
+      .job-list {
+        flex-grow: 1; /* Fill space */
+        overflow-y: auto; /* Enable internal scrolling */
+        padding: 10px;
+        background: #151515;
+        /* Scrollbar hiding styles */
+        &::-webkit-scrollbar {
+          display: none;
+        }
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+      }
+
+      /* Job Item Styling */
+      .job-item {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        background: #151515;
+        border: 1px solid #edededc9;
+        border-radius: 7px;
+        padding: 15px;
+        margin: 0 0 15px 0; /* Only bottom margin */
+        flex-wrap: nowrap;
+        opacity: 1;
+        transition: opacity 0.5s ease;
+      }
+      .job-item:last-child {
+        margin-bottom: 0;
+      } /* Remove margin from last item */
+      .job-item.removing {
+        opacity: 0;
+      }
+      .job-item img {
+        width: 70px;
+        height: 70px;
+        border-radius: 2px;
+        object-fit: cover;
+        margin-right: 15px;
+        flex-shrink: 0;
+      }
+      .job-info {
+        flex: 1;
+        min-width: 0;
+        text-align: left;
+      }
+      .job-info .company {
+        font-weight: bold;
+        font-size: 14px;
+        color: #01b581;
+        text-align: left;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin-bottom: 2px;
+      }
+      .job-info .title {
+        font-size: 12px;
+        color: #aaa;
+        text-align: left;
+        font-weight: 400;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin: 0;
+        line-height: normal;
+      }
+      .remove-button {
+        background-color: #01b581;
+        color: #151515;
+        border: none;
+        padding: 9px 20px;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: bold;
+        cursor: pointer;
+        margin-left: 15px;
+        flex-shrink: 0;
+        transition: background-color 0.2s ease;
+      }
+      .remove-button:hover {
+        background-color: #01a071;
+      }
+      .remove-button:active {
+        background-color: #018a61;
+      }
+
+      /* --- Footer styles --- */
+      footer.bottom-nav {
+        background-color: #151515;
+        padding: 8px 0;
+        position: fixed; /* Fixed to viewport */
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: var(--footer-height); /* Use variable */
+        box-sizing: border-box;
+        box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.15);
+        z-index: 100; /* High z-index */
+      }
+
+      .nav-icons {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        height: 100%;
+        max-width: var(--card-max-width); /* Center within max width */
+        margin: 0 auto;
+      }
+      .nav-item {
+        display: flex;
+        flex: 1;
+        text-align: center;
+        padding: 5px;
+        text-decoration: none;
+        color: inherit;
+        cursor: pointer;
+        height: 100%;
+        justify-content: center;
+        align-items: center;
+      }
+      .nav-item img {
+        width: 28px;
+        height: 28px;
+        display: block;
+        opacity: 0.6;
+        transition: opacity 0.2s ease;
+      }
+      .nav-item:hover img {
+        opacity: 0.8;
+      }
+      .nav-item.active img {
+        opacity: 1;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- App Container holds scrollable content -->
+    <div class="app-container">
+      <div class="top-bar">
+        <div class="title">Favorite</div>
+        <div class="subtitle" id="favorites-count">Loading...</div>
+      </div>
+
+      <div class="job-list" id="job-list">
+        <!-- Job items loaded by JS -->
+      </div>
+    </div>
+    <!-- End app-container -->
+
+    <!-- Footer is OUTSIDE the container and fixed -->
+    <footer class="bottom-nav">
+      <div class="nav-icons">
+        <a href="home.html" class="nav-item" title="Home">
+          <img src="normal/logo.png" alt="Home" />
+        </a>
+        <a href="search.html" class="nav-item" title="Search Jobs">
+          <img src="normal/search.png" alt="Search Jobs" />
+        </a>
+        <a href="Monetization.html" class="nav-item" title="Starred">
+          <img src="normal/star.png" alt="Starred" />
+        </a>
+        <a href="favorite.html" class="nav-item active" title="Liked">
+          <img src="green/heart-green.png" alt="Liked" />
+        </a>
+        <a href="user.html" class="nav-item" title="Profile">
+          <!-- Changed link back to user.html -->
+          <img src="normal/user.png" alt="Profile" />
+        </a>
+      </div>
+    </footer>
+
+    <script>
+      // --- JAVASCRIPT (No changes needed from previous correct version) ---
+      const realJobData = [
+        { company: "Google", domain: "google.com", title: "UX Designer" },
+        { company: "Meta", domain: "meta.com", title: "Software Engineer, AI" },
+        { company: "Apple", domain: "apple.com", title: "Hardware Engineer" },
+        {
+          company: "Amazon",
+          domain: "amazon.jobs",
+          title: "Cloud Solutions Architect",
+        },
+        {
+          company: "Microsoft",
+          domain: "microsoft.com",
+          title: "Product Manager, Office",
+        },
+        {
+          company: "Netflix",
+          domain: "netflix.com",
+          title: "Content Strategy Analyst",
+        },
+        {
+          company: "Adobe",
+          domain: "adobe.com",
+          title: "Creative Cloud Specialist",
+        },
+        {
+          company: "Salesforce",
+          domain: "salesforce.com",
+          title: "Marketing Automation Manager",
+        },
+        {
+          company: "Intel",
+          domain: "intel.com",
+          title: "Processor Design Engineer",
+        },
+        { company: "IBM", domain: "ibm.com", title: "Cloud Consultant" },
+        { company: "Nike", domain: "nike.com", title: "Footwear Designer" },
+        {
+          company: "Pfizer",
+          domain: "pfizer.com",
+          title: "Clinical Research Associate",
+        },
+        {
+          company: "Spotify",
+          domain: "spotify.com",
+          title: "Data Scientist, Playlists",
+        },
+        {
+          company: "Tesla",
+          domain: "tesla.com",
+          title: "Autopilot Software Engineer",
+        },
+        {
+          company: "Airbnb",
+          domain: "airbnb.com",
+          title: "Trust & Safety Investigator",
+        },
+        { company: "Zoom", domain: "zoom.us", title: "Backend Engineer" },
+        {
+          company: "LinkedIn",
+          domain: "linkedin.com",
+          title: "Content Marketing Manager",
+        },
+        { company: "Uber", domain: "uber.com", title: "Operations Manager" },
+        { company: "Twitter", domain: "x.com", title: "Platform Engineer" },
+        {
+          company: "Square",
+          domain: "squareup.com",
+          title: "Mobile Engineer (iOS)",
+        },
+      ];
+
+      function getRandomJobs(array, count) {
+        const shuffled = [...array].sort(() => 0.5 - Math.random());
+        return shuffled.slice(0, count);
+      }
+
+      function generateJobItem(job) {
+        const logoUrl = `https://logo.clearbit.com/${job.domain}?size=140`;
+        const placeholderLogo =
+          "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI3MCIgaGVpZ2h0PSI3MCIgdmlld0JveD0iMCAwIDcwIDcwIiBmaWxsPSJub25lIj4KPHJlY3Qgd2lkdGg9IjcwIiBoZWlnaHQ9IjcwIiByeD0iMiIgZmlsbD0iI2RkZCIvPgo8dGV4dCB4PSI1MCUiIHk9IjUwJSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEwIiBmaWxsPSIjYWFhIj5Mb2dvPC90ZXh0Pgo8L3N2Zz4K";
+
+        return `
+          <div class="job-item">
+            <img
+              src="${logoUrl}"
+              alt="${job.company} Logo"
+              onerror="this.onerror=null; this.src='${placeholderLogo}';"
+            />
+            <div class="job-info">
+              <div class="company">${job.company}</div>
+              <div class="title">${job.title}</div>
+            </div>
+            <button class="remove-button">Remove</button>
+          </div>
+        `;
+      }
+
+      function loadJobs() {
+        const jobListEl = document.getElementById("job-list");
+        if (!jobListEl) {
+          console.error("Job list element not found!");
+          return;
+        }
+        const randomJobs = getRandomJobs(realJobData.slice(), 15);
+        jobListEl.innerHTML = randomJobs.map(generateJobItem).join("");
+        updateFavoritesCount();
+        attachRemoveHandlers();
+      }
+
+      function updateFavoritesCount() {
+        const countEl = document.getElementById("favorites-count");
+        const count = document.querySelectorAll("#job-list .job-item").length;
+        if (countEl) {
+          countEl.textContent = `${count} Favorite${count !== 1 ? "s" : ""}`; // Pluralize
+        }
+      }
+
+      function attachRemoveHandlers() {
+        document.querySelectorAll(".remove-button").forEach((button) => {
+          button.removeEventListener("click", handleRemoveClick);
+          button.addEventListener("click", handleRemoveClick);
+        });
+      }
+
+      function handleRemoveClick(event) {
+        const jobItem = event.target.closest(".job-item");
+        if (!jobItem) return;
+        jobItem.classList.add("removing");
+        jobItem.addEventListener(
+          "transitionend",
+          function handleTransitionEnd(e) {
+            if (
+              e.propertyName === "opacity" &&
+              jobItem.classList.contains("removing")
+            ) {
+              jobItem.remove();
+              updateFavoritesCount();
+              jobItem.removeEventListener("transitionend", handleTransitionEnd);
+            }
+          },
+          { once: false }
+        );
+        setTimeout(() => {
+          if (
+            document.body.contains(jobItem) &&
+            jobItem.classList.contains("removing")
+          ) {
+            console.warn(
+              "Transitionend event did not fire, removing element via timeout."
+            );
+            jobItem.remove();
+            updateFavoritesCount();
+          }
+        }, 600);
+      }
+
+      function goBack() {
+        // Added goBack function as it was referenced in prev example
+        window.history.back();
+        console.log("Back action triggered (JS)");
+      }
+
+      document.addEventListener("DOMContentLoaded", function () {
+        loadJobs();
+      });
+    </script>
+  </body>
+</html>
